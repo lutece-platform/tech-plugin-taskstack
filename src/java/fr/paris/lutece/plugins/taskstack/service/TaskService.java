@@ -33,7 +33,22 @@
  */
 package fr.paris.lutece.plugins.taskstack.service;
 
+import fr.paris.lutece.plugins.taskstack.business.task.Task;
+import fr.paris.lutece.plugins.taskstack.business.task.TaskChange;
+import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeHome;
+import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeType;
+import fr.paris.lutece.plugins.taskstack.business.task.TaskHome;
+import fr.paris.lutece.plugins.taskstack.dto.AuthorDto;
+import fr.paris.lutece.plugins.taskstack.dto.DtoMapper;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
+import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.util.sql.TransactionManager;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 
 public class TaskService
 {
@@ -48,14 +63,87 @@ public class TaskService
         return _instance;
     }
 
-    public void createTask( final TaskDto task )
+    public String createTask( final TaskDto taskDto, final AuthorDto author, final String clientCode ) throws TaskStackException
     {
+        final TaskManagement taskManagement = SpringContextService.getBeansOfType( TaskManagement.class ).stream( )
+                .filter( t -> Objects.equals( t.getType( ), taskDto.getTaskType( ) ) ).findFirst( ).orElse( null );
+        TransactionManager.beginTransaction( null );
+        try
+        {
+            if ( taskManagement != null )
+            {
+                taskManagement.doBefore( taskDto );
+            }
+            final Timestamp creationDate = new Timestamp( new Date( ).getTime( ) );
+            taskDto.setTaskCode( UUID.randomUUID( ).toString( ) );
+            taskDto.setCreationDate( creationDate );
+            taskDto.setLastUpdateDate( creationDate );
+            taskDto.setLastUpdateClientCode( clientCode );
+            final Task task = DtoMapper.toTask( taskDto );
+            TaskHome.create( task );
 
+            final TaskChange taskChange = new TaskChange( );
+            taskChange.setTaskChangeDate( creationDate );
+            taskChange.setTaskChangeType( TaskChangeType.CREATED );
+            taskChange.setTaskStatus( taskDto.getTaskStatus( ) );
+            taskChange.setIdTask( task.getId( ) );
+            taskChange.setClientCode( clientCode );
+            taskChange.setAuthorType( author.getType( ) );
+            taskChange.setAuthorName( author.getName( ) );
+            TaskChangeHome.create( taskChange );
+            if ( taskManagement != null )
+            {
+                taskManagement.doAfter( taskDto );
+            }
+
+            TransactionManager.commitTransaction( null );
+            return taskDto.getTaskCode( );
+        }
+        catch( final Exception e )
+        {
+            TransactionManager.rollBack( null );
+            throw new TaskStackException( "An error occurred during task creation: ", e );
+        }
     }
 
-    public void updateTask( final TaskDto task )
+    public void updateTask( final TaskDto taskDto, final AuthorDto author, final String clientCode ) throws TaskStackException
     {
+        final TaskManagement taskManagement = SpringContextService.getBeansOfType( TaskManagement.class ).stream( )
+                .filter( t -> Objects.equals( t.getType( ), taskDto.getTaskType( ) ) ).findFirst( ).orElse( null );
+        TransactionManager.beginTransaction( null );
+        try
+        {
+            if ( taskManagement != null )
+            {
+                taskManagement.doBefore( taskDto );
+            }
+            final Timestamp updateDate = new Timestamp( new Date( ).getTime( ) );
+            taskDto.setLastUpdateDate( updateDate );
+            taskDto.setLastUpdateClientCode( clientCode );
+            final Task task = DtoMapper.toTask( taskDto );
+            TaskHome.update( task );
 
+            final TaskChange taskChange = new TaskChange( );
+            taskChange.setTaskChangeDate( updateDate );
+            taskChange.setTaskChangeType( TaskChangeType.UPDATED );
+            taskChange.setTaskStatus( taskDto.getTaskStatus( ) );
+            taskChange.setIdTask( task.getId( ) );
+            taskChange.setClientCode( clientCode );
+            taskChange.setAuthorType( author.getType( ) );
+            taskChange.setAuthorName( author.getName( ) );
+            TaskChangeHome.create( taskChange );
+            if ( taskManagement != null )
+            {
+                taskManagement.doAfter( taskDto );
+            }
+
+            TransactionManager.commitTransaction( null );
+        }
+        catch( final Exception e )
+        {
+            TransactionManager.rollBack( null );
+            throw new TaskStackException( "An error occurred during task update: ", e );
+        }
     }
 
     public TaskDto getTask( final String _strTaskCode )
@@ -63,7 +151,7 @@ public class TaskService
         return null;
     }
 
-    public void deleteTask( final String _strTaskCode )
+    public void deleteTask( final String _strTaskCode, final AuthorDto author, final String clientCode )
     {
 
     }

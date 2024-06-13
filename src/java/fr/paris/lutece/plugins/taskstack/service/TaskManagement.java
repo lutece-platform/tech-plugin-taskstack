@@ -33,9 +33,14 @@
  */
 package fr.paris.lutece.plugins.taskstack.service;
 
-public interface TaskType
-{
-    void doBefore( final String status, final String resourceId );
+import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
+import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 
-    void doAfter( final String status, final String resourceId );
+public interface TaskManagement
+{
+    String getType( );
+
+    void doBefore( final TaskDto task ) throws TaskStackException;
+
+    void doAfter( final TaskDto task ) throws TaskStackException;
 }
