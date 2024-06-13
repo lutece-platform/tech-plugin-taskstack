@@ -45,6 +45,18 @@ public class TaskHome
     private static final TaskDAO _taskDao = SpringContextService.getBean( TaskDAO.BEAN_NAME );
     private static final Plugin _plugin = PluginService.getPlugin( TaskStackPlugin.PLUGIN_NAME );
 
+    public static Task get( final String taskCode ) throws TaskStackException
+    {
+        try
+        {
+            return _taskDao.selectByCode( taskCode, _plugin );
+        }
+        catch( JsonProcessingException e )
+        {
+            throw new TaskStackException( "An error occurred trying to get a Task: ", e );
+        }
+    }
+
     public static Task get( final int taskId ) throws TaskStackException
     {
         try

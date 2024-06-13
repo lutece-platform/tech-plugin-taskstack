@@ -40,6 +40,7 @@ import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeType;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskHome;
 import fr.paris.lutece.plugins.taskstack.dto.AuthorDto;
 import fr.paris.lutece.plugins.taskstack.dto.DtoMapper;
+import fr.paris.lutece.plugins.taskstack.dto.TaskChangeDto;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -47,20 +48,26 @@ import fr.paris.lutece.util.sql.TransactionManager;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class TaskService
 {
     private static TaskService _instance;
 
-    public TaskService instance( )
+    public static TaskService instance( )
     {
         if ( _instance == null )
         {
             _instance = new TaskService( );
         }
         return _instance;
+    }
+
+    private TaskService( )
+    {
     }
 
     public String createTask( final TaskDto taskDto, final AuthorDto author, final String clientCode ) throws TaskStackException
@@ -74,11 +81,13 @@ public class TaskService
             {
                 taskManagement.doBefore( taskDto );
             }
+
             final Timestamp creationDate = new Timestamp( new Date( ).getTime( ) );
             taskDto.setTaskCode( UUID.randomUUID( ).toString( ) );
             taskDto.setCreationDate( creationDate );
             taskDto.setLastUpdateDate( creationDate );
             taskDto.setLastUpdateClientCode( clientCode );
+
             final Task task = DtoMapper.toTask( taskDto );
             TaskHome.create( task );
 
@@ -91,6 +100,7 @@ public class TaskService
             taskChange.setAuthorType( author.getType( ) );
             taskChange.setAuthorName( author.getName( ) );
             TaskChangeHome.create( taskChange );
+
             if ( taskManagement != null )
             {
                 taskManagement.doAfter( taskDto );
@@ -113,6 +123,12 @@ public class TaskService
         TransactionManager.beginTransaction( null );
         try
         {
+            final Task existingTask = TaskHome.get( taskDto.getTaskCode( ) );
+            if ( existingTask == null )
+            {
+                throw new TaskStackException( "Could not find task with code " + taskDto.getTaskCode( ) );
+            }
+
             if ( taskManagement != null )
             {
                 taskManagement.doBefore( taskDto );
@@ -120,14 +136,14 @@ public class TaskService
             final Timestamp updateDate = new Timestamp( new Date( ).getTime( ) );
             taskDto.setLastUpdateDate( updateDate );
             taskDto.setLastUpdateClientCode( clientCode );
-            final Task task = DtoMapper.toTask( taskDto );
-            TaskHome.update( task );
+            final Task updatedTask = DtoMapper.toTask( taskDto );
+            TaskHome.update( updatedTask );
 
             final TaskChange taskChange = new TaskChange( );
             taskChange.setTaskChangeDate( updateDate );
             taskChange.setTaskChangeType( TaskChangeType.UPDATED );
             taskChange.setTaskStatus( taskDto.getTaskStatus( ) );
-            taskChange.setIdTask( task.getId( ) );
+            taskChange.setIdTask( updatedTask.getId( ) );
             taskChange.setClientCode( clientCode );
             taskChange.setAuthorType( author.getType( ) );
             taskChange.setAuthorName( author.getName( ) );
@@ -146,9 +162,30 @@ public class TaskService
         }
     }
 
-    public TaskDto getTask( final String _strTaskCode )
+    public TaskDto getTask( final String _strTaskCode ) throws TaskStackException
     {
-        return null;
+        final Task existingTask = TaskHome.get( _strTaskCode );
+
+        if ( existingTask == null )
+        {
+            throw new TaskStackException( "Could not find task with code " + _strTaskCode );
+        }
+
+        return DtoMapper.toTaskChangeDto( existingTask );
+    }
+
+    public List<TaskChangeDto> getTaskHistory( final String _strTaskCode ) throws TaskStackException
+    {
+        final Task existingTask = TaskHome.get( _strTaskCode );
+
+        if ( existingTask == null )
+        {
+            throw new TaskStackException( "Could not find task with code " + _strTaskCode );
+        }
+
+        final List<TaskChange> history = TaskChangeHome.getHistory( _strTaskCode );
+
+        return history.stream( ).map( taskChange -> DtoMapper.toTaskChangeDto( taskChange, _strTaskCode ) ).collect( Collectors.toList( ) );
     }
 
     public void deleteTask( final String _strTaskCode, final AuthorDto author, final String clientCode )

@@ -51,9 +51,10 @@ public class TaskDAO implements ITaskDAO
     public static final String BEAN_NAME = "taskstack.task.dao";
     // Constants
     private static final String SQL_QUERY_SELECT = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id = ?";
+    private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task ( code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata ) VALUES ( ?, ?, ?, ?, ?, ?, ?, to_json(?::json) ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task WHERE id = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE stack_task SET code = ?, resource_id = ?, resource_type = ?, type = ?, creation_date = ?, last_update_date = ?, last_update_client_code = ?, status = ?, metadata = to_json(?::json) WHERE id = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE stack_task SET code = ?, resource_id = ?, resource_type = ?, type = ?, creation_date = ?, last_update_date = ?, last_update_client_code = ?, status = ?, metadata = to_json(?::json) WHERE code = ?";
 
     private final ObjectMapper objectMapper = new ObjectMapper( );
 
@@ -62,7 +63,7 @@ public class TaskDAO implements ITaskDAO
     {
         try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
-            this.createOrUpdateTask( task, daoUtil );
+            this.createOrUpdateTask( task, daoUtil, false );
         }
     }
 
@@ -71,7 +72,7 @@ public class TaskDAO implements ITaskDAO
     {
         try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-            this.createOrUpdateTask( task, daoUtil );
+            this.createOrUpdateTask( task, daoUtil, true );
         }
     }
 
@@ -93,6 +94,23 @@ public class TaskDAO implements ITaskDAO
     }
 
     @Override
+    public Task selectByCode( final String strCode, final Plugin plugin ) throws JsonProcessingException
+    {
+
+        try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_CODE, plugin ) )
+        {
+            daoUtil.setString( 1, strCode );
+            daoUtil.executeQuery( );
+            if ( daoUtil.next( ) )
+            {
+                return this.getTask( daoUtil );
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public void delete( final int nIdTask, final Plugin plugin )
     {
         try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
@@ -102,10 +120,9 @@ public class TaskDAO implements ITaskDAO
         }
     }
 
-    private void createOrUpdateTask( final Task task, final DAOUtil daoUtil ) throws JsonProcessingException
+    private void createOrUpdateTask( final Task task, final DAOUtil daoUtil, final boolean update ) throws JsonProcessingException
     {
         int i = 0;
-        task.setLastUpdateDate( new Timestamp( new Date( ).getTime( ) ) );
         daoUtil.setString( ++i, task.getTaskCode( ) );
         daoUtil.setString( ++i, task.getResourceId( ) );
         daoUtil.setString( ++i, task.getResourceType( ) );
@@ -115,6 +132,10 @@ public class TaskDAO implements ITaskDAO
         daoUtil.setString( ++i, task.getLastUpdateClientCode( ) );
         daoUtil.setString( ++i, task.getTaskStatus( ).name( ) );
         daoUtil.setString( ++i, objectMapper.writeValueAsString( task.getMetadata( ) ) );
+        if ( update )
+        {
+            daoUtil.setString( ++i, task.getTaskCode( ) );
+        }
 
         daoUtil.executeUpdate( );
 

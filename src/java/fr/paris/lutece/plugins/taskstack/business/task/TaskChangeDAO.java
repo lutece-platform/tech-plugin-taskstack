@@ -37,12 +37,16 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class TaskChangeDAO implements ITaskChangeDAO
 {
 
     // Constants
     public static final String BEAN_NAME = "taskstack.taskChange.dao";
+    private static final String SQL_QUERY_SELECT_ALL_BY_CODE = "SELECT ssc.id, ssc.id_task, ssc.author_name, ssc.author_type, ssc.client_code, ssc.status, ssc.change_type, ssc.change_date FROM stack_task_change ssc JOIN stack_task ss ON ss.id = ssc.id_task WHERE ss.code = ?";
     private static final String SQL_QUERY_SELECT = "SELECT id, id_task, author_name, author_type, client_code, status, change_type, change_date FROM stack_task_change WHERE id = ?";
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task_change ( id_task, author_name, author_type, client_code, status, change_type, change_date ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task_change WHERE id = ? ";
@@ -89,6 +93,21 @@ public class TaskChangeDAO implements ITaskChangeDAO
         {
             daoUtil.setInt( 1, nIdTaskChange );
             daoUtil.executeUpdate( );
+        }
+    }
+
+    @Override
+    public List<TaskChange> selectHistory( final String strTaskCode, final Plugin plugin) {
+        try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL_BY_CODE, plugin ) )
+        {
+            final List<TaskChange> history = new ArrayList<>();
+            daoUtil.setString( 1, strTaskCode );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                history.add(this.getTaskChange( daoUtil ));
+            }
+            return history;
         }
     }
 

@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.taskstack.business.task;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
 
+import java.util.List;
+
 public interface ITaskChangeDAO
 {
     void insert( final TaskChange taskChange, final Plugin plugin );
@@ -44,4 +46,6 @@ public interface ITaskChangeDAO
     TaskChange load( final int nIdTaskChange, final Plugin plugin );
 
     void delete( final int nIdTaskChange, final Plugin plugin );
+
+    List<TaskChange> selectHistory( final String strTaskCode, final Plugin plugin );
 }

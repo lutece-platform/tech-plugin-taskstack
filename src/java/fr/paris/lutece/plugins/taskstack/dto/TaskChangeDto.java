@@ -31,50 +31,79 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.business.task;
+package fr.paris.lutece.plugins.taskstack.dto;
 
-import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
-import fr.paris.lutece.plugins.taskstack.service.TaskStackPlugin;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeType;
+import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
 
-import java.util.List;
+import java.sql.Timestamp;
 
-public class TaskChangeHome
+public class TaskChangeDto
 {
-    private static final TaskChangeDAO _taskDao = SpringContextService.getBean( TaskChangeDAO.BEAN_NAME );
-    private static final Plugin _plugin = PluginService.getPlugin( TaskStackPlugin.PLUGIN_NAME );
+    private String _strTaskCode;
+    private AuthorDto author;
+    private String _strClientCode;
+    private TaskStatusType _enumTaskStatus;
+    private TaskChangeType _enumTaskChangeType;
+    private Timestamp _dateTaskChangeDate;
 
-    public static TaskChange get( final int taskChangeId ) throws TaskStackException
+    public String getTaskCode( )
     {
-        return _taskDao.load( taskChangeId, _plugin );
+        return _strTaskCode;
     }
 
-    public static TaskChange create( final TaskChange taskChange ) throws TaskStackException
+    public void setTaskCode( String _strTaskCode )
     {
-        _taskDao.insert( taskChange, _plugin );
-        return taskChange;
+        this._strTaskCode = _strTaskCode;
     }
 
-    public static TaskChange update( final TaskChange taskChange ) throws TaskStackException
+    public AuthorDto getAuthor( )
     {
-        _taskDao.update( taskChange, _plugin );
-        return taskChange;
+        return author;
     }
 
-    public static void delete( final int taskChangeId ) throws TaskStackException
+    public void setAuthor( AuthorDto author )
     {
-        _taskDao.delete( taskChangeId, _plugin );
+        this.author = author;
     }
 
-    public static void delete( final TaskChange taskChange ) throws TaskStackException
+    public String getClientCode( )
     {
-        _taskDao.delete( taskChange.getId( ), _plugin );
+        return _strClientCode;
     }
 
-    public static List<TaskChange> getHistory( final String strTaskCode )
+    public void setClientCode( String _strClientCode )
     {
-        return _taskDao.selectHistory( strTaskCode, _plugin );
+        this._strClientCode = _strClientCode;
+    }
+
+    public TaskStatusType getTaskStatus( )
+    {
+        return _enumTaskStatus;
+    }
+
+    public void setTaskStatus( TaskStatusType _enumTaskStatus )
+    {
+        this._enumTaskStatus = _enumTaskStatus;
+    }
+
+    public TaskChangeType getTaskChangeType( )
+    {
+        return _enumTaskChangeType;
+    }
+
+    public void setTaskChangeType( TaskChangeType _enumTaskChangeType )
+    {
+        this._enumTaskChangeType = _enumTaskChangeType;
+    }
+
+    public Timestamp getTaskChangeDate( )
+    {
+        return _dateTaskChangeDate;
+    }
+
+    public void setTaskChangeDate( Timestamp _dateTaskChangeDate )
+    {
+        this._dateTaskChangeDate = _dateTaskChangeDate;
     }
 }

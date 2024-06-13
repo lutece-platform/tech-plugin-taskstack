@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.taskstack.dto;
 
 import fr.paris.lutece.plugins.taskstack.business.task.Task;
+import fr.paris.lutece.plugins.taskstack.business.task.TaskChange;
 
 public class DtoMapper
 {
@@ -50,5 +51,35 @@ public class DtoMapper
         task.setResourceId( taskDto.getResourceId( ) );
         task.getMetadata( ).putAll( taskDto.getMetadata( ) );
         return task;
+    }
+
+    public static TaskDto toTaskChangeDto( final Task task )
+    {
+        final TaskDto taskDto = new TaskDto( );
+        taskDto.setTaskStatus( task.getTaskStatus( ) );
+        taskDto.setTaskCode( task.getTaskCode( ) );
+        taskDto.setResourceType( task.getResourceType( ) );
+        taskDto.setCreationDate( task.getCreationDate( ) );
+        taskDto.setTaskType( task.getTaskType( ) );
+        taskDto.setLastUpdateClientCode( task.getLastUpdateClientCode( ) );
+        taskDto.setLastUpdateDate( task.getLastUpdateDate( ) );
+        taskDto.setResourceId( task.getResourceId( ) );
+        taskDto.getMetadata( ).putAll( task.getMetadata( ) );
+        return taskDto;
+    }
+
+    public static TaskChangeDto toTaskChangeDto( final TaskChange taskChange, final String taskCode )
+    {
+        final TaskChangeDto taskChangeDto = new TaskChangeDto( );
+        taskChangeDto.setTaskStatus( taskChange.getTaskStatus( ) );
+        taskChangeDto.setTaskCode( taskCode );
+        taskChangeDto.setTaskChangeDate( taskChange.getTaskChangeDate( ) );
+        taskChangeDto.setTaskChangeType( taskChange.getTaskChangeType( ) );
+        final AuthorDto author = new AuthorDto( );
+        author.setName( taskChange.getAuthorName( ) );
+        author.setType( taskChange.getAuthorType( ) );
+        taskChangeDto.setAuthor( author );
+        taskChangeDto.setClientCode( taskChange.getClientCode( ) );
+        return taskChangeDto;
     }
 }

@@ -44,5 +44,7 @@ public interface ITaskDAO
 
     Task load( final int nIdTask, final Plugin plugin ) throws JsonProcessingException;
 
+    Task selectByCode( String strCode, Plugin plugin ) throws JsonProcessingException;
+
     void delete( final int nIdTask, final Plugin plugin );
 }
