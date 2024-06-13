@@ -147,7 +147,7 @@ public class TaskDAO implements ITaskDAO
             sqlQuerySearch = sqlQuerySearch.replace( "${task_status_criteria}", "1=1" );
         }
 
-        if ( nNbDaysSinceCreated != null )
+        if ( nNbDaysSinceCreated != null && nNbDaysSinceCreated > 0 )
         {
             sqlQuerySearch = sqlQuerySearch.replace( "${nb_days_creation_criteria}", "creation_date > now() - interval '" + nNbDaysSinceCreated + "' day" );
         }
