@@ -36,7 +36,7 @@ package fr.paris.lutece.plugins.taskstack.service;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 
-public interface TaskManagement
+public interface ITaskManagement
 {
     String getTaskType( );
 

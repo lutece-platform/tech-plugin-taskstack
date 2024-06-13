@@ -51,6 +51,7 @@ import fr.paris.lutece.util.sql.TransactionManager;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -74,21 +75,23 @@ public class TaskService
 
     public String createTask( final TaskDto taskDto, final AuthorDto author, final String clientCode ) throws TaskStackException
     {
-        final TaskManagement taskManagement = SpringContextService.getBeansOfType( TaskManagement.class ).stream( )
-                .filter( t -> Objects.equals( t.getTaskType( ), taskDto.getTaskType( ) ) ).findFirst( ).orElse( null );
+        final Map<String, ITaskManagement> taskManagementBeans = SpringContextService.getContext( ).getBeansOfType( ITaskManagement.class );
+        final ITaskManagement taskManagement = taskManagementBeans.values( ).stream( ).filter( t -> Objects.equals( t.getTaskType( ), taskDto.getTaskType( ) ) )
+                .findFirst( ).orElse( null );
         TransactionManager.beginTransaction( null );
         try
         {
-            if ( taskManagement != null )
-            {
-                taskManagement.doBefore( taskDto );
-            }
-
             final Timestamp creationDate = new Timestamp( new Date( ).getTime( ) );
             taskDto.setTaskCode( UUID.randomUUID( ).toString( ) );
             taskDto.setCreationDate( creationDate );
             taskDto.setLastUpdateDate( creationDate );
             taskDto.setLastUpdateClientCode( clientCode );
+            taskDto.setTaskStatus( TaskStatusType.TODO );
+
+            if ( taskManagement != null )
+            {
+                taskManagement.doBefore( taskDto );
+            }
 
             final Task task = DtoMapper.toTask( taskDto );
             TaskHome.create( task );
@@ -114,13 +117,13 @@ public class TaskService
         catch( final Exception e )
         {
             TransactionManager.rollBack( null );
-            throw new TaskStackException( "An error occurred during task creation: ", e );
+            throw new TaskStackException( "An error occurred during task creation: " + e.getMessage( ), e );
         }
     }
 
     public void updateTask( final TaskDto taskDto, final AuthorDto author, final String clientCode ) throws TaskStackException
     {
-        final TaskManagement taskManagement = SpringContextService.getBeansOfType( TaskManagement.class ).stream( )
+        final ITaskManagement taskManagement = SpringContextService.getBeansOfType( ITaskManagement.class ).stream( )
                 .filter( t -> Objects.equals( t.getTaskType( ), taskDto.getTaskType( ) ) ).findFirst( ).orElse( null );
         TransactionManager.beginTransaction( null );
         try
@@ -160,7 +163,7 @@ public class TaskService
         catch( final Exception e )
         {
             TransactionManager.rollBack( null );
-            throw new TaskStackException( "An error occurred during task update: ", e );
+            throw new TaskStackException( "An error occurred during task update: " + e.getMessage( ), e );
         }
     }
 

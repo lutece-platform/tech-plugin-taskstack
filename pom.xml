@@ -8,7 +8,7 @@
         <version>6.0.0</version>
     </parent>
     <groupId>fr.paris.lutece.plugins</groupId>
-    <artifactId>plugin-task-stack-management</artifactId>
+    <artifactId>plugin-taskstack-management</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>lutece-plugin</packaging>
     <name>Plugin task stack management</name>
@@ -21,7 +21,7 @@
     </scm>
 
     <properties>
-        <componentName>plugin-task-stack-management</componentName>
+        <componentName>plugin-taskstack-management</componentName>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
