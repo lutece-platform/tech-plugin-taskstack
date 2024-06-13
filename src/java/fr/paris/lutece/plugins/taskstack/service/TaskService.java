@@ -75,7 +75,7 @@ public class TaskService
     public String createTask( final TaskDto taskDto, final AuthorDto author, final String clientCode ) throws TaskStackException
     {
         final TaskManagement taskManagement = SpringContextService.getBeansOfType( TaskManagement.class ).stream( )
-                .filter( t -> Objects.equals( t.getType( ), taskDto.getTaskType( ) ) ).findFirst( ).orElse( null );
+                .filter( t -> Objects.equals( t.getTaskType( ), taskDto.getTaskType( ) ) ).findFirst( ).orElse( null );
         TransactionManager.beginTransaction( null );
         try
         {
@@ -121,7 +121,7 @@ public class TaskService
     public void updateTask( final TaskDto taskDto, final AuthorDto author, final String clientCode ) throws TaskStackException
     {
         final TaskManagement taskManagement = SpringContextService.getBeansOfType( TaskManagement.class ).stream( )
-                .filter( t -> Objects.equals( t.getType( ), taskDto.getTaskType( ) ) ).findFirst( ).orElse( null );
+                .filter( t -> Objects.equals( t.getTaskType( ), taskDto.getTaskType( ) ) ).findFirst( ).orElse( null );
         TransactionManager.beginTransaction( null );
         try
         {

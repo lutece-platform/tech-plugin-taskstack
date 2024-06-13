@@ -38,7 +38,7 @@ import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 
 public interface TaskManagement
 {
-    String getType( );
+    String getTaskType( );
 
     void doBefore( final TaskDto task ) throws TaskStackException;
 
