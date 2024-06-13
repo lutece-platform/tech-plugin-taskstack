@@ -68,6 +68,11 @@ public class TaskChangeHome
         _taskDao.delete( taskChangeId, _plugin );
     }
 
+    public static void deleteAllByTaskId( final int taskId ) throws TaskStackException
+    {
+        _taskDao.deleteAllByTaskId( taskId, _plugin );
+    }
+
     public static void delete( final TaskChange taskChange ) throws TaskStackException
     {
         _taskDao.delete( taskChange.getId( ), _plugin );

@@ -38,7 +38,6 @@ import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class TaskChangeDAO implements ITaskChangeDAO
@@ -50,6 +49,7 @@ public class TaskChangeDAO implements ITaskChangeDAO
     private static final String SQL_QUERY_SELECT = "SELECT id, id_task, author_name, author_type, client_code, status, change_type, change_date FROM stack_task_change WHERE id = ?";
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task_change ( id_task, author_name, author_type, client_code, status, change_type, change_date ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task_change WHERE id = ? ";
+    private static final String SQL_QUERY_DELETE_ALL_BY_TASK_ID = "DELETE FROM stack_task_change WHERE id_task = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE stack_task_change SET id_task = ?, author_name = ?, author_type = ?, client_code = ?, status = ?, change_type = ?, change_date = ? WHERE id = ?";
 
     @Override
@@ -108,6 +108,15 @@ public class TaskChangeDAO implements ITaskChangeDAO
                 history.add(this.getTaskChange( daoUtil ));
             }
             return history;
+        }
+    }
+
+    @Override
+    public void deleteAllByTaskId(int taskId, Plugin plugin) {
+        try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ALL_BY_TASK_ID, plugin ) )
+        {
+            daoUtil.setInt( 1, taskId );
+            daoUtil.executeUpdate( );
         }
     }
 

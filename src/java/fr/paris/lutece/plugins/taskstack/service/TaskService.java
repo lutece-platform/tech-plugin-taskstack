@@ -188,9 +188,15 @@ public class TaskService
         return history.stream( ).map( taskChange -> DtoMapper.toTaskChangeDto( taskChange, _strTaskCode ) ).collect( Collectors.toList( ) );
     }
 
-    public void deleteTask( final String _strTaskCode, final AuthorDto author, final String clientCode )
-    {
+    public void deleteTask( final String _strTaskCode, final AuthorDto author, final String clientCode ) throws TaskStackException {
+        final Task existingTask = TaskHome.get( _strTaskCode );
 
+        if ( existingTask == null )
+        {
+            throw new TaskStackException( "Could not find task with code " + _strTaskCode );
+        }
+        TaskChangeHome.deleteAllByTaskId( existingTask.getId() );
+        TaskHome.delete( existingTask.getId() );
     }
 
 }

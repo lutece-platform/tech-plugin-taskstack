@@ -48,4 +48,6 @@ public interface ITaskChangeDAO
     void delete( final int nIdTaskChange, final Plugin plugin );
 
     List<TaskChange> selectHistory( final String strTaskCode, final Plugin plugin );
+
+    void deleteAllByTaskId( final int taskId, final Plugin plugin);
 }
