@@ -36,14 +36,16 @@ package fr.paris.lutece.plugins.taskstack.business.task;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class TaskDAO implements ITaskDAO
 {
@@ -52,6 +54,7 @@ public class TaskDAO implements ITaskDAO
     // Constants
     private static final String SQL_QUERY_SELECT = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id = ?";
     private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";
+    private static final String SQL_QUERY_SEARCH = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE ${task_type_criteria} AND ${task_status_criteria} AND ${nb_days_creation_criteria} ${order_criteria}";
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task ( code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata ) VALUES ( ?, ?, ?, ?, ?, ?, ?, to_json(?::json) ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task WHERE id = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE stack_task SET code = ?, resource_id = ?, resource_type = ?, type = ?, creation_date = ?, last_update_date = ?, last_update_client_code = ?, status = ?, metadata = to_json(?::json) WHERE code = ?";
@@ -117,6 +120,60 @@ public class TaskDAO implements ITaskDAO
         {
             daoUtil.setInt( 1, nIdTask );
             daoUtil.executeUpdate( );
+        }
+    }
+
+    @Override
+    public List<Task> search( String strTaskType, TaskStatusType enumTaskStatus, Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering,
+            Plugin plugin ) throws JsonProcessingException
+    {
+
+        String sqlQuerySearch = SQL_QUERY_SEARCH;
+        if ( StringUtils.isNotBlank( strTaskType ) )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_type_criteria}", "type='" + strTaskType + "'" );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_type_criteria}", "1=1" );
+        }
+
+        if ( enumTaskStatus != null )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_status_criteria}", "status='" + enumTaskStatus.name( ) + "'" );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_status_criteria}", "1=1" );
+        }
+
+        if ( nNbDaysSinceCreated != null )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${nb_days_creation_criteria}", "creation_date > now() - interval '" + nNbDaysSinceCreated + "' day" );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${nb_days_creation_criteria}", "1=1" );
+        }
+
+        if ( creationDateOrdering != null )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${order_criteria}", " ORDER BY creation_date " + creationDateOrdering.name( ) );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${order_criteria}", "" );
+        }
+
+        try ( final DAOUtil daoUtil = new DAOUtil( sqlQuerySearch, plugin ) )
+        {
+            final List<Task> tasks = new ArrayList<>( );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                tasks.add( this.getTask( daoUtil ) );
+            }
+            return tasks;
         }
     }
 

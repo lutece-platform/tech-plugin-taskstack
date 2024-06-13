@@ -31,26 +31,17 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.business.task;
+package fr.paris.lutece.plugins.taskstack.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
-import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.test.LuteceTestCase;
 
-import java.util.List;
-
-public interface ITaskDAO
+public class TaskTest extends LuteceTestCase
 {
-    void insert( final Task task, final Plugin plugin ) throws JsonProcessingException;
 
-    void update( final Task task, final Plugin plugin ) throws JsonProcessingException;
+    public void testInit( )
+    {
+        // TODO
+        assertEquals( 1, 1 );
+    }
 
-    Task load( final int nIdTask, final Plugin plugin ) throws JsonProcessingException;
-
-    Task selectByCode( String strCode, Plugin plugin ) throws JsonProcessingException;
-
-    void delete( final int nIdTask, final Plugin plugin );
-
-    List<Task> search( final String strTaskType, final TaskStatusType enumTaskStatus, final Integer nNbDaysSinceCreated,
-            final CreationDateOrdering creationDateOrdering, final Plugin plugin ) throws JsonProcessingException;
 }

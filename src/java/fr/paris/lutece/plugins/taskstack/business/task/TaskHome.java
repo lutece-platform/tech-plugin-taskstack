@@ -34,11 +34,14 @@
 package fr.paris.lutece.plugins.taskstack.business.task;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 import fr.paris.lutece.plugins.taskstack.service.TaskStackPlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+
+import java.util.List;
 
 public class TaskHome
 {
@@ -105,4 +108,9 @@ public class TaskHome
         _taskDao.delete( task.getId( ), _plugin );
     }
 
+    public static List<Task> search( final String strTaskType, final TaskStatusType enumTaskStatus, final Integer nNbDaysSinceCreated,
+            final CreationDateOrdering creationDateOrdering ) throws JsonProcessingException
+    {
+        return _taskDao.search( strTaskType, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, _plugin );
+    }
 }

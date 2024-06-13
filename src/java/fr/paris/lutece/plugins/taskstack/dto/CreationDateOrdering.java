@@ -31,17 +31,10 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.service;
+package fr.paris.lutece.plugins.taskstack.dto;
 
-import fr.paris.lutece.test.LuteceTestCase;
-
-public class ActionsBatchTaskTest extends LuteceTestCase
+public enum CreationDateOrdering
 {
-
-    public void testInit( )
-    {
-        // TODO
-        assertEquals( 1, 1 );
-    }
-
+    ASC,
+    DESC
 }

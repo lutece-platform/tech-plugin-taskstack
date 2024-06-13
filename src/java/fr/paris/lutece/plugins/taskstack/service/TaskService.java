@@ -38,7 +38,9 @@ import fr.paris.lutece.plugins.taskstack.business.task.TaskChange;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeHome;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeType;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskHome;
+import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
 import fr.paris.lutece.plugins.taskstack.dto.AuthorDto;
+import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
 import fr.paris.lutece.plugins.taskstack.dto.DtoMapper;
 import fr.paris.lutece.plugins.taskstack.dto.TaskChangeDto;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
@@ -171,7 +173,7 @@ public class TaskService
             throw new TaskStackException( "Could not find task with code " + _strTaskCode );
         }
 
-        return DtoMapper.toTaskChangeDto( existingTask );
+        return DtoMapper.toTaskDto( existingTask );
     }
 
     public List<TaskChangeDto> getTaskHistory( final String _strTaskCode ) throws TaskStackException
@@ -188,7 +190,7 @@ public class TaskService
         return history.stream( ).map( taskChange -> DtoMapper.toTaskChangeDto( taskChange, _strTaskCode ) ).collect( Collectors.toList( ) );
     }
 
-    public void deleteTask( final String _strTaskCode, final AuthorDto author, final String clientCode ) throws TaskStackException
+    public void deleteTask( final String _strTaskCode ) throws TaskStackException
     {
         final Task existingTask = TaskHome.get( _strTaskCode );
 
@@ -198,6 +200,20 @@ public class TaskService
         }
         TaskChangeHome.deleteAllByTaskId( existingTask.getId( ) );
         TaskHome.delete( existingTask.getId( ) );
+    }
+
+    public List<TaskDto> search( final String _strTaskType, final TaskStatusType _enumTaskStatus, final Integer _nNbDaysSinceCreated,
+            final CreationDateOrdering creationDateOrdering ) throws TaskStackException
+    {
+        try
+        {
+            final List<Task> search = TaskHome.search( _strTaskType, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering );
+            return search.stream( ).map( DtoMapper::toTaskDto ).collect( Collectors.toList( ) );
+        }
+        catch( Exception e )
+        {
+            throw new TaskStackException( "An error occurred during task search", e );
+        }
     }
 
 }

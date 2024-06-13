@@ -53,7 +53,7 @@ public class DtoMapper
         return task;
     }
 
-    public static TaskDto toTaskChangeDto( final Task task )
+    public static TaskDto toTaskDto( final Task task )
     {
         final TaskDto taskDto = new TaskDto( );
         taskDto.setTaskStatus( task.getTaskStatus( ) );
