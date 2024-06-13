@@ -97,22 +97,24 @@ public class TaskChangeDAO implements ITaskChangeDAO
     }
 
     @Override
-    public List<TaskChange> selectHistory( final String strTaskCode, final Plugin plugin) {
+    public List<TaskChange> selectHistory( final String strTaskCode, final Plugin plugin )
+    {
         try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL_BY_CODE, plugin ) )
         {
-            final List<TaskChange> history = new ArrayList<>();
+            final List<TaskChange> history = new ArrayList<>( );
             daoUtil.setString( 1, strTaskCode );
             daoUtil.executeQuery( );
             while ( daoUtil.next( ) )
             {
-                history.add(this.getTaskChange( daoUtil ));
+                history.add( this.getTaskChange( daoUtil ) );
             }
             return history;
         }
     }
 
     @Override
-    public void deleteAllByTaskId(int taskId, Plugin plugin) {
+    public void deleteAllByTaskId( int taskId, Plugin plugin )
+    {
         try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ALL_BY_TASK_ID, plugin ) )
         {
             daoUtil.setInt( 1, taskId );

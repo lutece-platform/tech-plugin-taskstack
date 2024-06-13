@@ -49,5 +49,5 @@ public interface ITaskChangeDAO
 
     List<TaskChange> selectHistory( final String strTaskCode, final Plugin plugin );
 
-    void deleteAllByTaskId( final int taskId, final Plugin plugin);
+    void deleteAllByTaskId( final int taskId, final Plugin plugin );
 }
