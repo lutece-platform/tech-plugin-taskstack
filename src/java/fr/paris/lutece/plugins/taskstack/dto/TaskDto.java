@@ -47,20 +47,19 @@ public class TaskDto
     protected String _strTaskCode;
 
     /**
-     * ID of the resource associated with the task.
-     * As the tasks are generic, this ID can be whatever you want but must allow you find the resource in your implementation.
+     * ID of the resource associated with the task. As the tasks are generic, this ID can be whatever you want but must allow you find the resource in your
+     * implementation.
      */
     protected String _strResourceId;
 
     /**
-     * Type of the resource.
-     * As the tasks are generic, this type can be whatever you want but must allow you find the resource in your implementation.
+     * Type of the resource. As the tasks are generic, this type can be whatever you want but must allow you find the resource in your implementation.
      */
     protected String _strResourceType;
 
     /**
-     * The type of the task.
-     * As the tasks are generic, this type can be whatever you want but must allow you to identify the task management in your implementation.
+     * The type of the task. As the tasks are generic, this type can be whatever you want but must allow you to identify the task management in your
+     * implementation.
      */
     protected String _strTaskType;
 
