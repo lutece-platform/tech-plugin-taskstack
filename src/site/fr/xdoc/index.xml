@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>Module workflow actions batch</title>
+    </properties>
+    <head>
+        <!-- Keywords example : "cms, authentication, cms, workflow, seo, collaborative, ..." 
+             Use the language of this xdoc -->
+        <meta name="keywords" content="workflow, batch, action, mass" />
+    </head>
+    <body>
+        <section name="Module workflow actions batch">
+            <!--
+            <p>
+                <img src="images/default.png" />
+            </p>
+            -->
+            <subsection name="Introduction">
+                <p>L'objectif de ce module est d'offire une tâche permettant, à partir d'une ressource de workflow, de lancer des actions sur des ressources filles dépendant d'un autre workflow.</p>
+         
+            </subsection>
+            <subsection name="Configuration">
+            	<p>Tout d'abord associer la tâche à une action.</p>
+                <p>Dans la page de configuration de la tâche, sélectionner le workfow cible, le statut des resources à sélectionner, et l'action à exécuter. Préciser également le type des ressources filles.</p>
+            </subsection>
+            <subsection name="Usage">
+                <p>Au lancement de l'action de la ressource du workflow principal, l'action sélectionnée sera lancée pour les ressources étant dans le statut sélectionné. Le traitement est asynchrone, il est possible de suivre la progression du traitement avec un flux de barre de progression (service ProgressBar).</p>
+                <p>Le token du flux doit être initialisé avant pour pouvoir être utilisé dans le contexte initial, et doit être mis en session avec le nom : </p>
+                <p>"FEED-<the Resource Type>-<the Resource Id>-<the Workflow Id>-<the State Id>-<the action Id>"</p>
+                <p>Exemple : "FEED-IDENTITY_RESOURCE-99-2-5-4"
+            </subsection>
+        </section>
+    </body>
+</document>
+

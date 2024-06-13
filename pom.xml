@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>fr.paris.lutece.tools</groupId>
+        <artifactId>lutece-global-pom</artifactId>
+        <version>6.0.0</version>
+    </parent>
+    <groupId>fr.paris.lutece.plugins</groupId>
+    <artifactId>plugin-task-stack-management</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>lutece-plugin</packaging>
+    <name>Plugin task stack management</name>
+    <url>https://...</url>
+
+    <scm>
+        <connection>scm:git:https://github.com/lutece-platform/tech-plugin-taskstack</connection>
+        <developerConnection>scm:git:https://github.com/lutece-platform/tech-plugin-taskstack</developerConnection>
+        <url>https://github.com/lutece-platform/tech-plugin-taskstack</url>
+    </scm>
+
+    <properties>
+        <componentName>plugin-task-stack-management</componentName>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>luteceReleaseRepository</id>
+            <name>luteceReleaseRepository</name>
+            <url>http://dev.lutece.paris.fr/nexus/content/groups/maven_repository/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>fr.paris.lutece</groupId>
+            <artifactId>lutece-core</artifactId>
+            <version>[7.0.0,)</version>
+            <type>lutece-core</type>
+        </dependency>
+    </dependencies>
+
+</project>

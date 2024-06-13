@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>Module workflow actions batch</title>
+    </properties>
+    <head>
+        <!-- Keywords example : "cms, authentication, cms, workflow, seo, collaborative, ..." 
+             Use the language of this xdoc -->
+        <meta name="keywords" content="workflow, batch, action, mass" />
+    </head>
+    <body>
+        <section name="Module workflow actions batch">
+            <!--
+            <p>
+                <img src="images/default.png" />
+            </p>
+            -->
+            <subsection name="Introduction">
+                <p>The aim of this plugin is to offer a task that allow to launch, from a workflow resource, actions of another child resources depending of another workflow</p>
+         
+            </subsection>
+            <subsection name="Configuration">
+            	<p>First associate the task to an action.</p>
+                <p>In the task configuration page, choose the target workflow, the state of the resources of the target workflow that will be selected, and the action to process.</p>
+            </subsection>
+            <subsection name="Usage">
+                <p>Lauch the action in the main workflow, and the batch of actions will be executed asynchonously. Use a feed token to follow the progress of the batch execution.</p>
+                <p>The feed token must be generated before, and set in session, with a name according to : </p>
+                <p>"FEED-<the Resource Type>-<the Resource Id>-<the Workflow Id>-<the State Id>-<the action Id>"</p>
+                <p>Example : "FEED-IDENTITY_RESOURCE-99-2-5-4"
+            </subsection>
+        </section>
+    </body>
+</document>
+

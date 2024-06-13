@@ -1,0 +1,80 @@
+
+<@box>
+    <@boxHeader title='#i18n{module.workflow.actionsbatch.actionsbatch.title}' boxTools=true />
+
+	<@boxBody>
+		<@formGroup labelKey='#i18n{module.workflow.actionsbatch.actionsbatch_config.workflow}' mandatory=true >		
+			<@select name='workflow' id='workflow' />
+    	</@formGroup>
+    	
+    	<@formGroup labelKey='#i18n{module.workflow.actionsbatch.actionsbatch_config.state}' mandatory=true >		
+			<@select name='state' id='state' />
+		</@formGroup>
+    	
+    	<@formGroup labelKey='#i18n{module.workflow.actionsbatch.actionsbatch_config.action}' mandatory=true >		
+			<@select name='action' id='action' />
+		</@formGroup>
+    	
+
+		<@formGroup labelKey='#i18n{module.workflow.actionsbatch.actionsbatch_config.resource_type}' mandatory=true >		
+			<@input name='resource_type' id='resource_type' value=resource_type />
+    	</@formGroup>
+   	</@boxBody>
+</@box>
+
+<script type="text/javascript">
+
+
+$(function() {
+
+  $('#workflow').change( function( ) {
+      for (var key in json.workflows) {
+      	if (json.workflows[key].id == $(this).val() ) {
+          	fillSelect( $('#state'), json.workflows[key].states );
+        }
+      }
+      $('#state').change();
+  });
+
+  $('#state').change( function( ) {
+      for (var key in json.workflows) {
+      	   if (json.workflows[key].id == $('#workflow').val() ) {
+              for (var skey in json.workflows[key].states) {
+                if (json.workflows[key].states[skey].id ==  $(this).val() ) {
+                  fillSelect( $('#action'), json.workflows[key].states[skey].actions);
+                }
+              }
+          }
+      }       
+  });
+  
+  
+  // init
+  fillSelect( $('#workflow'), json.workflows );
+  $('#workflow').change();
+  
+  // init current values (if exists)
+  $('#workflow option[value=${workflow_id}]').attr('selected','selected').change();
+  $('#state option[value=${state_id}]').attr('selected','selected').change();
+  $('#action option[value=${action_id}]').attr('selected','selected');
+
+});
+
+function addSelectOption( select, value, text) {
+	select.append($('<option>', {
+	    value: value,
+	    text: text
+	   }));
+}
+
+function fillSelect( select, subjson) {  
+  select.find('option').remove().end();
+  for (var key in subjson) {
+     addSelectOption( select, subjson[key].id, subjson[key].name);
+  }
+}
+
+
+json= ${json_workflow_actions!}
+
+</script>
