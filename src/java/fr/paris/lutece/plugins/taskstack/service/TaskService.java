@@ -202,7 +202,7 @@ public class TaskService
         TaskHome.delete( existingTask.getId( ) );
     }
 
-    public List<TaskDto> search( final String _strTaskType, final TaskStatusType _enumTaskStatus, final Integer _nNbDaysSinceCreated,
+    public List<TaskDto> search( final String _strTaskType, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
             final CreationDateOrdering creationDateOrdering ) throws TaskStackException
     {
         try

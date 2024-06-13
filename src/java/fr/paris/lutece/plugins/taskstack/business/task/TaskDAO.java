@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class TaskDAO implements ITaskDAO
 {
@@ -124,7 +125,7 @@ public class TaskDAO implements ITaskDAO
     }
 
     @Override
-    public List<Task> search( String strTaskType, TaskStatusType enumTaskStatus, Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering,
+    public List<Task> search( String strTaskType, List<TaskStatusType> enumTaskStatus, Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering,
             Plugin plugin ) throws JsonProcessingException
     {
 
@@ -138,9 +139,10 @@ public class TaskDAO implements ITaskDAO
             sqlQuerySearch = sqlQuerySearch.replace( "${task_type_criteria}", "1=1" );
         }
 
-        if ( enumTaskStatus != null )
+        if ( enumTaskStatus != null && !enumTaskStatus.isEmpty( ) )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_status_criteria}", "status='" + enumTaskStatus.name( ) + "'" );
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_status_criteria}",
+                    "status IN ('" + enumTaskStatus.stream( ).map( Enum::name ).collect( Collectors.joining( "', '" ) ) + "')" );
         }
         else
         {

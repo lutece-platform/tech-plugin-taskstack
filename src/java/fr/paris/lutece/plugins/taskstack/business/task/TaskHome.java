@@ -108,7 +108,7 @@ public class TaskHome
         _taskDao.delete( task.getId( ), _plugin );
     }
 
-    public static List<Task> search( final String strTaskType, final TaskStatusType enumTaskStatus, final Integer nNbDaysSinceCreated,
+    public static List<Task> search( final String strTaskType, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
             final CreationDateOrdering creationDateOrdering ) throws JsonProcessingException
     {
         return _taskDao.search( strTaskType, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, _plugin );

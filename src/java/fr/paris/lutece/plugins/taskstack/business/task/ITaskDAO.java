@@ -51,6 +51,6 @@ public interface ITaskDAO
 
     void delete( final int nIdTask, final Plugin plugin );
 
-    List<Task> search( final String strTaskType, final TaskStatusType enumTaskStatus, final Integer nNbDaysSinceCreated,
+    List<Task> search( final String strTaskType, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
             final CreationDateOrdering creationDateOrdering, final Plugin plugin ) throws JsonProcessingException;
 }
