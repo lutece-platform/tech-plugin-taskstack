@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 public class TaskDAO implements ITaskDAO
 {
 
-    public static final String BEAN_NAME = "taskstack-management.task.dao";
+    public static final String BEAN_NAME = "taskstack.task.dao";
     // Constants
     private static final String SQL_QUERY_SELECT = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id = ?";
     private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";

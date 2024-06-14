@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><plug-in>
-    <name>taskstack-management</name>
+    <name>taskstack</name>
     <class>fr.paris.lutece.plugins.taskstack.service.TaskStackPlugin</class>
     <version>1.0.0-SNAPSHOT</version>
     <documentation/>
     <installation/>
     <changes/>
     <user-guide/>
-    <description>taskstack-management.plugin.description</description>
-    <provider>taskstack-management.plugin.provider</provider>
+    <description>taskstack.plugin.description</description>
+    <provider>taskstack.plugin.provider</provider>
     <provider-url>http://lutece.paris.fr</provider-url>
     <icon-url>images/admin/skin/feature_default_icon.png</icon-url>
     <copyright>Copyright (c) 2022 Mairie de Paris</copyright>

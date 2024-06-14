@@ -44,7 +44,7 @@ public class TaskChangeDAO implements ITaskChangeDAO
 {
 
     // Constants
-    public static final String BEAN_NAME = "taskstack-management.task.change.dao";
+    public static final String BEAN_NAME = "taskstack.task.change.dao";
     private static final String SQL_QUERY_SELECT_ALL_BY_CODE = "SELECT ssc.id, ssc.id_task, ssc.author_name, ssc.author_type, ssc.client_code, ssc.status, ssc.change_type, ssc.change_date FROM stack_task_change ssc JOIN stack_task ss ON ss.id = ssc.id_task WHERE ss.code = ?";
     private static final String SQL_QUERY_SELECT = "SELECT id, id_task, author_name, author_type, client_code, status, change_type, change_date FROM stack_task_change WHERE id = ?";
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task_change ( id_task, author_name, author_type, client_code, status, change_type, change_date ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
