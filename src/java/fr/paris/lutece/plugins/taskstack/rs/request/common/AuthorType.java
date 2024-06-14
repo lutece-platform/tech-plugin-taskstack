@@ -31,16 +31,38 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.service;
+package fr.paris.lutece.plugins.taskstack.rs.request.common;
 
-import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
-import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
+import java.util.Arrays;
+import java.util.Objects;
 
-public interface ITaskManagement
+/**
+ * Request author
+ */
+public enum AuthorType
 {
-    String getTaskType( );
+    /**
+     * Owner of identity
+     */
+    owner,
 
-    void doBefore( final String strResourceId, final String strResourceType, final TaskStatusType status ) throws TaskStackException;
+    /**
+     * Agent BO
+     */
+    agent,
 
-    void doAfter( final String strResourceId, final String strResourceType, final TaskStatusType status ) throws TaskStackException;
+    /**
+     * Admin BO
+     */
+    admin,
+
+    /**
+     * Batch automatique
+     */
+    application;
+
+    public static boolean valid( final String strValue )
+    {
+        return Arrays.stream( values( ) ).anyMatch( value -> Objects.equals( value.name( ), strValue ) );
+    }
 }

@@ -39,12 +39,12 @@ import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeHome;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeType;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskHome;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
-import fr.paris.lutece.plugins.taskstack.dto.AuthorDto;
 import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
 import fr.paris.lutece.plugins.taskstack.dto.DtoMapper;
 import fr.paris.lutece.plugins.taskstack.dto.TaskChangeDto;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
+import fr.paris.lutece.plugins.taskstack.rs.request.common.RequestAuthor;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.sql.TransactionManager;
 
@@ -72,7 +72,7 @@ public class TaskService
     {
     }
 
-    public String createTask( final TaskDto taskDto, final AuthorDto author, final String clientCode ) throws TaskStackException
+    public String createTask( final TaskDto taskDto, final RequestAuthor author, final String clientCode ) throws TaskStackException
     {
         final Map<String, ITaskManagement> taskManagementBeans = SpringContextService.getContext( ).getBeansOfType( ITaskManagement.class );
         final ITaskManagement taskManagement = taskManagementBeans.values( ).stream( ).filter( t -> Objects.equals( t.getTaskType( ), taskDto.getTaskType( ) ) )
@@ -86,7 +86,7 @@ public class TaskService
 
             if ( taskManagement != null )
             {
-                taskManagement.doBefore( taskDto.getResourceId( ), taskDto.getTaskStatus( ) );
+                taskManagement.doBefore( taskDto.getResourceId( ), taskDto.getResourceType( ), taskDto.getTaskStatus( ) );
             }
 
             final Task task = DtoMapper.toTask( taskDto );
@@ -98,13 +98,13 @@ public class TaskService
             taskChange.setTaskStatus( taskDto.getTaskStatus( ) );
             taskChange.setIdTask( task.getId( ) );
             taskChange.setClientCode( clientCode );
-            taskChange.setAuthorType( author.getType( ) );
+            taskChange.setAuthorType( author.getType( ).name( ) );
             taskChange.setAuthorName( author.getName( ) );
             TaskChangeHome.create( taskChange );
 
             if ( taskManagement != null )
             {
-                taskManagement.doAfter( taskDto.getResourceId( ), taskDto.getTaskStatus( ) );
+                taskManagement.doAfter( taskDto.getResourceId( ), taskDto.getResourceType( ), taskDto.getTaskStatus( ) );
             }
 
             TransactionManager.commitTransaction( null );
@@ -117,7 +117,7 @@ public class TaskService
         }
     }
 
-    public void updateTaskStatus( final String strTaskCode, final TaskStatusType newStatus, final AuthorDto author, final String clientCode )
+    public void updateTaskStatus( final String strTaskCode, final TaskStatusType newStatus, final RequestAuthor author, final String clientCode )
             throws TaskStackException
     {
         final Task existingTask = TaskHome.get( strTaskCode );
@@ -133,7 +133,7 @@ public class TaskService
         {
             if ( taskManagement != null )
             {
-                taskManagement.doBefore( existingTask.getResourceId( ), newStatus );
+                taskManagement.doBefore( existingTask.getResourceId( ), existingTask.getResourceType( ), newStatus );
             }
             final Timestamp updateStatusTime = TaskHome.updateStatus( strTaskCode, newStatus, clientCode );
 
@@ -142,13 +142,13 @@ public class TaskService
             taskChange.setTaskStatus( newStatus );
             taskChange.setIdTask( existingTask.getId( ) );
             taskChange.setClientCode( clientCode );
-            taskChange.setAuthorType( author.getType( ) );
+            taskChange.setAuthorType( author.getType( ).name( ) );
             taskChange.setAuthorName( author.getName( ) );
             taskChange.setTaskChangeDate( updateStatusTime );
             TaskChangeHome.create( taskChange );
             if ( taskManagement != null )
             {
-                taskManagement.doAfter( existingTask.getResourceId( ), newStatus );
+                taskManagement.doAfter( existingTask.getResourceId( ), existingTask.getResourceType( ), newStatus );
             }
 
             TransactionManager.commitTransaction( null );

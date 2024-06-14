@@ -31,16 +31,45 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.service;
+package fr.paris.lutece.plugins.taskstack.rs.request.common;
 
-import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
-import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public interface ITaskManagement
+public class RequestAuthor
 {
-    String getTaskType( );
 
-    void doBefore( final String strResourceId, final String strResourceType, final TaskStatusType status ) throws TaskStackException;
+    @JsonProperty( "author_name" )
+    protected String name;
+    @JsonProperty( "author_type" )
+    protected AuthorType type;
 
-    void doAfter( final String strResourceId, final String strResourceType, final TaskStatusType status ) throws TaskStackException;
+    public RequestAuthor( )
+    {
+    }
+
+    public RequestAuthor( String name, String type )
+    {
+        this.name = name;
+        this.type = AuthorType.valueOf( type );
+    }
+
+    public String getName( )
+    {
+        return name;
+    }
+
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+
+    public AuthorType getType( )
+    {
+        return type;
+    }
+
+    public void setType( AuthorType type )
+    {
+        this.type = type;
+    }
 }

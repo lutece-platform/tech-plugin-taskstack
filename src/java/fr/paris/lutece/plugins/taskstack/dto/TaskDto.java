@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.taskstack.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
 
 import java.sql.Timestamp;
@@ -44,48 +45,57 @@ public class TaskDto
     /**
      * Code of the task, generated at creation time.
      */
+    @JsonProperty( "task_code" )
     protected String _strTaskCode;
 
     /**
      * ID of the resource associated with the task. As the tasks are generic, this ID can be whatever you want but must allow you find the resource in your
      * implementation.
      */
+    @JsonProperty( "resource_id" )
     protected String _strResourceId;
 
     /**
      * Type of the resource. As the tasks are generic, this type can be whatever you want but must allow you find the resource in your implementation.
      */
+    @JsonProperty( "resource_type" )
     protected String _strResourceType;
 
     /**
      * The type of the task. As the tasks are generic, this type can be whatever you want but must allow you to identify the task management in your
      * implementation.
      */
+    @JsonProperty( "task_type" )
     protected String _strTaskType;
 
     /**
      * Date of the creation of the Task
      */
+    @JsonProperty( "creation_date" )
     protected Timestamp _dateCreationDate;
 
     /**
      * Date of the last update of the task
      */
+    @JsonProperty( "last_update_date" )
     protected Timestamp _dateLastUpdateDate;
 
     /**
      * Code of the last client that updated the task
      */
+    @JsonProperty( "last_update_client_code" )
     protected String _strLastUpdateClientCode;
 
     /**
      * Status of the task
      */
+    @JsonProperty( "task_status" )
     protected TaskStatusType _enumTaskStatus;
 
     /**
      * Additional data that must be provided as key:value strings.
      */
+    @JsonProperty( "metadata" )
     protected Map<String, String> _mapMetadata = new HashMap<>( );
 
     public String getTaskCode( )

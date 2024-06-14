@@ -31,16 +31,29 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.service;
+package fr.paris.lutece.plugins.taskstack.util;
 
-import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
-import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
-
-public interface ITaskManagement
+public class Constants
 {
-    String getTaskType( );
 
-    void doBefore( final String strResourceId, final String strResourceType, final TaskStatusType status ) throws TaskStackException;
+    public static final String PLUGIN_PATH = "taskstack";
 
-    void doAfter( final String strResourceId, final String strResourceType, final TaskStatusType status ) throws TaskStackException;
+    public static final String PARAM_CLIENT_CODE = "client_code";
+    public static final String PARAM_APPLICATION_CODE = "application_code";
+    public static final String PARAM_AUTHOR_NAME = "author_name";
+    public static final String PARAM_AUTHOR_TYPE = "author_type";
+
+    public static final String TASK_PATH = "/task";
+    public static final String TASK_CODE_PARAM = "task_code";
+    public static final String TASK_STATUS_PATH = "/status";
+    public static final String TASK_STATUS_PATH_WITH_PARAM = TASK_STATUS_PATH + "/{" + TASK_CODE_PARAM + "}";
+    public static final String SEARCH_TASK_PATH = "/search";
+
+    public static final String KEY_STATUS = "status";
+    public static final String KEY_RESPONSE = "response";
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_MESSAGE_KEY = "message_key";
+    public static final String KEY_HTTP_CODE = "http_code";
+
+    public static final String PROPERTY_REST_INFO_SUCCESSFUL_OPERATION = "taskstack.rest.info.successful.operation";
 }

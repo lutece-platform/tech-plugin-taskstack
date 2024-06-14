@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.taskstack.dto;
 
 import fr.paris.lutece.plugins.taskstack.business.task.Task;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskChange;
+import fr.paris.lutece.plugins.taskstack.rs.request.common.AuthorType;
+import fr.paris.lutece.plugins.taskstack.rs.request.common.RequestAuthor;
 
 public class DtoMapper
 {
@@ -75,9 +77,9 @@ public class DtoMapper
         taskChangeDto.setTaskCode( taskCode );
         taskChangeDto.setTaskChangeDate( taskChange.getTaskChangeDate( ) );
         taskChangeDto.setTaskChangeType( taskChange.getTaskChangeType( ) );
-        final AuthorDto author = new AuthorDto( );
+        final RequestAuthor author = new RequestAuthor( );
         author.setName( taskChange.getAuthorName( ) );
-        author.setType( taskChange.getAuthorType( ) );
+        author.setType( AuthorType.valueOf( taskChange.getAuthorType( ) ) );
         taskChangeDto.setAuthor( author );
         taskChangeDto.setClientCode( taskChange.getClientCode( ) );
         return taskChangeDto;

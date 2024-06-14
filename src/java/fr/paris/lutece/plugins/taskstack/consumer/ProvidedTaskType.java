@@ -31,30 +31,27 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.dto;
+package fr.paris.lutece.plugins.taskstack.consumer;
 
-public class AuthorDto
+import fr.paris.lutece.plugins.taskstack.service.ITaskManagement;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class ProvidedTaskType
 {
-    private String name;
-    private String type;
+    private static final List<String> values = new ArrayList<>( );
 
-    public String getName( )
+    public static List<String> values( )
     {
-        return name;
-    }
-
-    public void setName( String name )
-    {
-        this.name = name;
-    }
-
-    public String getType( )
-    {
-        return type;
-    }
-
-    public void setType( String type )
-    {
-        this.type = type;
+        if ( values.isEmpty( ) )
+        {
+            final Map<String, ITaskManagement> taskManagementBeans = SpringContextService.getContext( ).getBeansOfType( ITaskManagement.class );
+            values.addAll( taskManagementBeans.values( ).stream( ).map( ITaskManagement::getTaskType ).collect( Collectors.toList( ) ) );
+        }
+        return values;
     }
 }

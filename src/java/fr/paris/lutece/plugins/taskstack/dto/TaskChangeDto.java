@@ -35,13 +35,14 @@ package fr.paris.lutece.plugins.taskstack.dto;
 
 import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeType;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
+import fr.paris.lutece.plugins.taskstack.rs.request.common.RequestAuthor;
 
 import java.sql.Timestamp;
 
 public class TaskChangeDto
 {
     private String _strTaskCode;
-    private AuthorDto author;
+    private RequestAuthor author;
     private String _strClientCode;
     private TaskStatusType _enumTaskStatus;
     private TaskChangeType _enumTaskChangeType;
@@ -57,12 +58,12 @@ public class TaskChangeDto
         this._strTaskCode = _strTaskCode;
     }
 
-    public AuthorDto getAuthor( )
+    public RequestAuthor getAuthor( )
     {
         return author;
     }
 
-    public void setAuthor( AuthorDto author )
+    public void setAuthor( RequestAuthor author )
     {
         this.author = author;
     }
