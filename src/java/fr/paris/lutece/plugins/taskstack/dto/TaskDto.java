@@ -46,145 +46,127 @@ public class TaskDto
      * Code of the task, generated at creation time.
      */
     @JsonProperty( "task_code" )
-    protected String _strTaskCode;
+    protected String taskCode;
 
     /**
      * ID of the resource associated with the task. As the tasks are generic, this ID can be whatever you want but must allow you find the resource in your
      * implementation.
      */
     @JsonProperty( "resource_id" )
-    protected String _strResourceId;
+    protected String resourceId;
 
     /**
      * Type of the resource. As the tasks are generic, this type can be whatever you want but must allow you find the resource in your implementation.
      */
     @JsonProperty( "resource_type" )
-    protected String _strResourceType;
+    protected String resourceType;
 
     /**
      * The type of the task. As the tasks are generic, this type can be whatever you want but must allow you to identify the task management in your
      * implementation.
      */
     @JsonProperty( "task_type" )
-    protected String _strTaskType;
+    protected String taskType;
 
     /**
      * Date of the creation of the Task
      */
     @JsonProperty( "creation_date" )
-    protected Timestamp _dateCreationDate;
+    protected Timestamp creationDate;
 
     /**
      * Date of the last update of the task
      */
     @JsonProperty( "last_update_date" )
-    protected Timestamp _dateLastUpdateDate;
+    protected Timestamp lastUpdateDate;
 
     /**
      * Code of the last client that updated the task
      */
     @JsonProperty( "last_update_client_code" )
-    protected String _strLastUpdateClientCode;
+    protected String lastUpdateClientCode;
 
     /**
      * Status of the task
      */
     @JsonProperty( "task_status" )
-    protected TaskStatusType _enumTaskStatus;
+    protected TaskStatusType taskStatus;
 
     /**
      * Additional data that must be provided as key:value strings.
      */
     @JsonProperty( "metadata" )
-    protected Map<String, String> _mapMetadata = new HashMap<>( );
+    protected Map<String, String> metadata = new HashMap<>( );
 
-    public String getTaskCode( )
-    {
-        return _strTaskCode;
+    public String getTaskCode() {
+        return taskCode;
     }
 
-    public void setTaskCode( String _strTaskCode )
-    {
-        this._strTaskCode = _strTaskCode;
+    public void setTaskCode(String taskCode) {
+        this.taskCode = taskCode;
     }
 
-    public String getResourceId( )
-    {
-        return _strResourceId;
+    public String getResourceId() {
+        return resourceId;
     }
 
-    public void setResourceId( String _strResourceId )
-    {
-        this._strResourceId = _strResourceId;
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 
-    public String getResourceType( )
-    {
-        return _strResourceType;
+    public String getResourceType() {
+        return resourceType;
     }
 
-    public void setResourceType( String _strResourceType )
-    {
-        this._strResourceType = _strResourceType;
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
     }
 
-    public String getTaskType( )
-    {
-        return _strTaskType;
+    public String getTaskType() {
+        return taskType;
     }
 
-    public void setTaskType( String _strTaskType )
-    {
-        this._strTaskType = _strTaskType;
+    public void setTaskType(String taskType) {
+        this.taskType = taskType;
     }
 
-    public Timestamp getCreationDate( )
-    {
-        return _dateCreationDate;
+    public Timestamp getCreationDate() {
+        return creationDate;
     }
 
-    public void setCreationDate( Timestamp _dateCreateDate )
-    {
-        this._dateCreationDate = _dateCreateDate;
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
     }
 
-    public Timestamp getLastUpdateDate( )
-    {
-        return _dateLastUpdateDate;
+    public Timestamp getLastUpdateDate() {
+        return lastUpdateDate;
     }
 
-    public void setLastUpdateDate( Timestamp _dateLastUpdateDate )
-    {
-        this._dateLastUpdateDate = _dateLastUpdateDate;
+    public void setLastUpdateDate(Timestamp lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 
-    public String getLastUpdateClientCode( )
-    {
-        return _strLastUpdateClientCode;
+    public String getLastUpdateClientCode() {
+        return lastUpdateClientCode;
     }
 
-    public void setLastUpdateClientCode( String _strLastUpdateClientCode )
-    {
-        this._strLastUpdateClientCode = _strLastUpdateClientCode;
+    public void setLastUpdateClientCode(String lastUpdateClientCode) {
+        this.lastUpdateClientCode = lastUpdateClientCode;
     }
 
-    public TaskStatusType getTaskStatus( )
-    {
-        return _enumTaskStatus;
+    public TaskStatusType getTaskStatus() {
+        return taskStatus;
     }
 
-    public void setTaskStatus( TaskStatusType _enumTaskStatus )
-    {
-        this._enumTaskStatus = _enumTaskStatus;
+    public void setTaskStatus(TaskStatusType taskStatus) {
+        this.taskStatus = taskStatus;
     }
 
-    public Map<String, String> getMetadata( )
-    {
-        return _mapMetadata;
+    public Map<String, String> getMetadata() {
+        return metadata;
     }
 
-    public void setMetadata( Map<String, String> _mapMetadata )
-    {
-        this._mapMetadata = _mapMetadata;
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 }
