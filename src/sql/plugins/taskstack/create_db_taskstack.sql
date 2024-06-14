@@ -14,6 +14,10 @@ CREATE TABLE stack_task
     CONSTRAINT stack_task_pkey PRIMARY KEY (id)
 );
 
+CREATE INDEX stack_task_resource_idx ON stack_task (resource_id, resource_type);
+CREATE INDEX stack_task_type_status_idx ON stack_task (type, status);
+
+
 DROP TABLE IF EXISTS stack_task_change;
 CREATE TABLE stack_task_change
 (
