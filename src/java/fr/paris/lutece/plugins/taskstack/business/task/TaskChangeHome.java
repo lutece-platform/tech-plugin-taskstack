@@ -57,12 +57,6 @@ public class TaskChangeHome
         return taskChange;
     }
 
-    public static TaskChange update( final TaskChange taskChange ) throws TaskStackException
-    {
-        _taskDao.update( taskChange, _plugin );
-        return taskChange;
-    }
-
     public static void delete( final int taskChangeId ) throws TaskStackException
     {
         _taskDao.delete( taskChangeId, _plugin );

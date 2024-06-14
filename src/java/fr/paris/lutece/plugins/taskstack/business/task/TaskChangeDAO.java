@@ -50,23 +50,27 @@ public class TaskChangeDAO implements ITaskChangeDAO
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task_change ( id_task, author_name, author_type, client_code, status, change_type, change_date ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task_change WHERE id = ? ";
     private static final String SQL_QUERY_DELETE_ALL_BY_TASK_ID = "DELETE FROM stack_task_change WHERE id_task = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE stack_task_change SET id_task = ?, author_name = ?, author_type = ?, client_code = ?, status = ?, change_type = ?, change_date = ? WHERE id = ?";
 
     @Override
     public void insert( final TaskChange taskChange, final Plugin plugin )
     {
         try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
-            this.createOrUpdateTaskChange( taskChange, daoUtil );
-        }
-    }
+            int i = 0;
+            daoUtil.setInt( ++i, taskChange.getIdTask( ) );
+            daoUtil.setString( ++i, taskChange.getAuthorName( ) );
+            daoUtil.setString( ++i, taskChange.getAuthorType( ) );
+            daoUtil.setString( ++i, taskChange.getClientCode( ) );
+            daoUtil.setString( ++i, taskChange.getTaskStatus( ).name( ) );
+            daoUtil.setString( ++i, taskChange.getTaskChangeType( ).name( ) );
+            daoUtil.setTimestamp( ++i, taskChange.getTaskChangeDate( ) );
 
-    @Override
-    public void update( final TaskChange taskChange, final Plugin plugin )
-    {
-        try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
-        {
-            this.createOrUpdateTaskChange( taskChange, daoUtil );
+            daoUtil.executeUpdate( );
+
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                taskChange.setId( daoUtil.getGeneratedKeyInt( 1 ) );
+            }
         }
     }
 
@@ -119,25 +123,6 @@ public class TaskChangeDAO implements ITaskChangeDAO
         {
             daoUtil.setInt( 1, taskId );
             daoUtil.executeUpdate( );
-        }
-    }
-
-    private void createOrUpdateTaskChange( final TaskChange taskChange, final DAOUtil daoUtil )
-    {
-        int i = 0;
-        daoUtil.setInt( ++i, taskChange.getIdTask( ) );
-        daoUtil.setString( ++i, taskChange.getAuthorName( ) );
-        daoUtil.setString( ++i, taskChange.getAuthorType( ) );
-        daoUtil.setString( ++i, taskChange.getClientCode( ) );
-        daoUtil.setString( ++i, taskChange.getTaskStatus( ).name( ) );
-        daoUtil.setString( ++i, taskChange.getTaskChangeType( ).name( ) );
-        daoUtil.setTimestamp( ++i, taskChange.getTaskChangeDate( ) );
-
-        daoUtil.executeUpdate( );
-
-        if ( daoUtil.nextGeneratedKey( ) )
-        {
-            taskChange.setId( daoUtil.getGeneratedKeyInt( 1 ) );
         }
     }
 

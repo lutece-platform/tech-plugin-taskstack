@@ -41,6 +41,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public class TaskHome
@@ -96,6 +97,18 @@ public class TaskHome
             throw new TaskStackException( "An error occurred trying to update a Task: ", e );
         }
         return task;
+    }
+
+    public static Timestamp updateStatus( final String taskCode, final TaskStatusType newStatus, final String clientCode ) throws TaskStackException
+    {
+        try
+        {
+            return _taskDao.updateStatus( taskCode, newStatus, clientCode, _plugin );
+        }
+        catch( JsonProcessingException e )
+        {
+            throw new TaskStackException( "An error occurred trying to update a Task: ", e );
+        }
     }
 
     public static void delete( final int taskId ) throws TaskStackException

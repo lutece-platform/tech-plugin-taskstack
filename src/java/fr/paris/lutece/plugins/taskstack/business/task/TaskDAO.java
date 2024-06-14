@@ -42,6 +42,9 @@ import fr.paris.lutece.util.sql.DAOUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +61,7 @@ public class TaskDAO implements ITaskDAO
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task ( code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, to_json(?::json) ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task WHERE id = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE stack_task SET code = ?, resource_id = ?, resource_type = ?, type = ?, creation_date = ?, last_update_date = ?, last_update_client_code = ?, status = ?, metadata = to_json(?::json) WHERE code = ?";
+    private static final String SQL_QUERY_UPDATE_STATUS = "UPDATE stack_task SET last_update_date = ?, last_update_client_code = ?, status = ? WHERE code = ?";
 
     private final ObjectMapper objectMapper = new ObjectMapper( );
 
@@ -66,7 +70,27 @@ public class TaskDAO implements ITaskDAO
     {
         try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
-            this.createOrUpdateTask( task, daoUtil, false );
+            final ZonedDateTime now = ZonedDateTime.now( ZoneId.systemDefault( ) );
+            task.setCreationDate( Timestamp.from( now.toInstant( ) ) );
+            task.setLastUpdateDate( Timestamp.from( now.toInstant( ) ) );
+
+            int i = 0;
+            daoUtil.setString( ++i, task.getTaskCode( ) );
+            daoUtil.setString( ++i, task.getResourceId( ) );
+            daoUtil.setString( ++i, task.getResourceType( ) );
+            daoUtil.setString( ++i, task.getTaskType( ) );
+            daoUtil.setTimestamp( ++i, task.getCreationDate( ) );
+            daoUtil.setTimestamp( ++i, task.getLastUpdateDate( ) );
+            daoUtil.setString( ++i, task.getLastUpdateClientCode( ) );
+            daoUtil.setString( ++i, task.getTaskStatus( ).name( ) );
+            daoUtil.setString( ++i, objectMapper.writeValueAsString( task.getMetadata( ) ) );
+
+            daoUtil.executeUpdate( );
+
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                task.setId( daoUtil.getGeneratedKeyInt( 1 ) );
+            }
         }
     }
 
@@ -75,7 +99,38 @@ public class TaskDAO implements ITaskDAO
     {
         try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-            this.createOrUpdateTask( task, daoUtil, true );
+            final ZonedDateTime now = ZonedDateTime.now( ZoneId.systemDefault( ) );
+            task.setLastUpdateDate( Timestamp.from( now.toInstant( ) ) );
+            int i = 0;
+            daoUtil.setString( ++i, task.getTaskCode( ) );
+            daoUtil.setString( ++i, task.getResourceId( ) );
+            daoUtil.setString( ++i, task.getResourceType( ) );
+            daoUtil.setString( ++i, task.getTaskType( ) );
+            daoUtil.setTimestamp( ++i, task.getCreationDate( ) );
+            daoUtil.setTimestamp( ++i, task.getLastUpdateDate( ) );
+            daoUtil.setString( ++i, task.getLastUpdateClientCode( ) );
+            daoUtil.setString( ++i, task.getTaskStatus( ).name( ) );
+            daoUtil.setString( ++i, objectMapper.writeValueAsString( task.getMetadata( ) ) );
+            daoUtil.setString( ++i, task.getTaskCode( ) );
+            daoUtil.executeUpdate( );
+        }
+    }
+
+    @Override
+    public Timestamp updateStatus( final String taskCode, final TaskStatusType newStatus, final String clientCode, final Plugin plugin )
+            throws JsonProcessingException
+    {
+        try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_STATUS, plugin ) )
+        {
+            final ZonedDateTime now = ZonedDateTime.now( ZoneId.systemDefault( ) );
+            final Timestamp timestamp = Timestamp.from( now.toInstant( ) );
+            int i = 0;
+            daoUtil.setTimestamp( ++i, timestamp );
+            daoUtil.setString( ++i, clientCode );
+            daoUtil.setString( ++i, newStatus.name( ) );
+            daoUtil.setString( ++i, taskCode );
+            daoUtil.executeUpdate( );
+            return timestamp;
         }
     }
 
@@ -175,31 +230,6 @@ public class TaskDAO implements ITaskDAO
                 tasks.add( this.getTask( daoUtil ) );
             }
             return tasks;
-        }
-    }
-
-    private void createOrUpdateTask( final Task task, final DAOUtil daoUtil, final boolean update ) throws JsonProcessingException
-    {
-        int i = 0;
-        daoUtil.setString( ++i, task.getTaskCode( ) );
-        daoUtil.setString( ++i, task.getResourceId( ) );
-        daoUtil.setString( ++i, task.getResourceType( ) );
-        daoUtil.setString( ++i, task.getTaskType( ) );
-        daoUtil.setTimestamp( ++i, task.getCreationDate( ) );
-        daoUtil.setTimestamp( ++i, task.getLastUpdateDate( ) );
-        daoUtil.setString( ++i, task.getLastUpdateClientCode( ) );
-        daoUtil.setString( ++i, task.getTaskStatus( ).name( ) );
-        daoUtil.setString( ++i, objectMapper.writeValueAsString( task.getMetadata( ) ) );
-        if ( update )
-        {
-            daoUtil.setString( ++i, task.getTaskCode( ) );
-        }
-
-        daoUtil.executeUpdate( );
-
-        if ( daoUtil.nextGeneratedKey( ) )
-        {
-            task.setId( daoUtil.getGeneratedKeyInt( 1 ) );
         }
     }
 

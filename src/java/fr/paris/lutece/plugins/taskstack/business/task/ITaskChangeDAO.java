@@ -41,8 +41,6 @@ public interface ITaskChangeDAO
 {
     void insert( final TaskChange taskChange, final Plugin plugin );
 
-    void update( final TaskChange taskChange, final Plugin plugin );
-
     TaskChange load( final int nIdTaskChange, final Plugin plugin );
 
     void delete( final int nIdTaskChange, final Plugin plugin );

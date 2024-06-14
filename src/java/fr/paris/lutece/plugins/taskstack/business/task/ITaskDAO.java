@@ -37,6 +37,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface ITaskDAO
@@ -44,6 +45,8 @@ public interface ITaskDAO
     void insert( final Task task, final Plugin plugin ) throws JsonProcessingException;
 
     void update( final Task task, final Plugin plugin ) throws JsonProcessingException;
+
+    Timestamp updateStatus( final String taskCode, final TaskStatusType newStatus, final String clientCode, Plugin plugin ) throws JsonProcessingException;
 
     Task load( final int nIdTask, final Plugin plugin ) throws JsonProcessingException;
 
