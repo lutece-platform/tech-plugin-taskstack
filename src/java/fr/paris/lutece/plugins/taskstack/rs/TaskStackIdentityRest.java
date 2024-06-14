@@ -63,12 +63,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * SuspiciousIdentityRest
+ * TaskStackIdentityRest
  */
 @Path( RestConstants.BASE_PATH + Constants.PLUGIN_PATH )
 public class TaskStackIdentityRest
 {
-    protected static final String ERROR_DURING_TREATMENT = "An error occurred during the treatment.";
 
     @POST
     @Path( Constants.TASK_PATH )

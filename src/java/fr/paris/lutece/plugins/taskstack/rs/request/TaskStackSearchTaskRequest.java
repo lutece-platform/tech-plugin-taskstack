@@ -80,7 +80,7 @@ public class TaskStackSearchTaskRequest extends AbstractTaskStackRequest
                     taskSearchRequest.getNbDaysSinceCreated( ), taskSearchRequest.getCreationDateOrdering( ) );
             final SearchTaskResponse response = new SearchTaskResponse( );
             response.getTasks( ).addAll( searchResults );
-            response.setStatus( ResponseStatusFactory.success( ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
+            response.setStatus( ResponseStatusFactory.ok( ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
             return response;
         }
         catch( final TaskStackException e )

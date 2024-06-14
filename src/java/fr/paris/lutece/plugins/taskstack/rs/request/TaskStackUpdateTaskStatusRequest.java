@@ -70,7 +70,7 @@ public class TaskStackUpdateTaskStatusRequest extends AbstractTaskStackRequest
         {
             TaskService.instance( ).updateTaskStatus( taskCode, taskUpdateStatusRequest.getStatus( ), _author, _strClientCode );
             final UpdateTaskStatusResponse response = new UpdateTaskStatusResponse( );
-            response.setStatus( ResponseStatusFactory.success( ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
+            response.setStatus( ResponseStatusFactory.ok( ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
             return response;
         }
         catch( final TaskStackException e )
