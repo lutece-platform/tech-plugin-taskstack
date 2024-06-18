@@ -98,75 +98,93 @@ public class TaskDto
     @JsonProperty( "metadata" )
     protected Map<String, String> metadata = new HashMap<>( );
 
-    public String getTaskCode() {
+    public String getTaskCode( )
+    {
         return taskCode;
     }
 
-    public void setTaskCode(String taskCode) {
+    public void setTaskCode( String taskCode )
+    {
         this.taskCode = taskCode;
     }
 
-    public String getResourceId() {
+    public String getResourceId( )
+    {
         return resourceId;
     }
 
-    public void setResourceId(String resourceId) {
+    public void setResourceId( String resourceId )
+    {
         this.resourceId = resourceId;
     }
 
-    public String getResourceType() {
+    public String getResourceType( )
+    {
         return resourceType;
     }
 
-    public void setResourceType(String resourceType) {
+    public void setResourceType( String resourceType )
+    {
         this.resourceType = resourceType;
     }
 
-    public String getTaskType() {
+    public String getTaskType( )
+    {
         return taskType;
     }
 
-    public void setTaskType(String taskType) {
+    public void setTaskType( String taskType )
+    {
         this.taskType = taskType;
     }
 
-    public Timestamp getCreationDate() {
+    public Timestamp getCreationDate( )
+    {
         return creationDate;
     }
 
-    public void setCreationDate(Timestamp creationDate) {
+    public void setCreationDate( Timestamp creationDate )
+    {
         this.creationDate = creationDate;
     }
 
-    public Timestamp getLastUpdateDate() {
+    public Timestamp getLastUpdateDate( )
+    {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(Timestamp lastUpdateDate) {
+    public void setLastUpdateDate( Timestamp lastUpdateDate )
+    {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public String getLastUpdateClientCode() {
+    public String getLastUpdateClientCode( )
+    {
         return lastUpdateClientCode;
     }
 
-    public void setLastUpdateClientCode(String lastUpdateClientCode) {
+    public void setLastUpdateClientCode( String lastUpdateClientCode )
+    {
         this.lastUpdateClientCode = lastUpdateClientCode;
     }
 
-    public TaskStatusType getTaskStatus() {
+    public TaskStatusType getTaskStatus( )
+    {
         return taskStatus;
     }
 
-    public void setTaskStatus(TaskStatusType taskStatus) {
+    public void setTaskStatus( TaskStatusType taskStatus )
+    {
         this.taskStatus = taskStatus;
     }
 
-    public Map<String, String> getMetadata() {
+    public Map<String, String> getMetadata( )
+    {
         return metadata;
     }
 
-    public void setMetadata(Map<String, String> metadata) {
+    public void setMetadata( Map<String, String> metadata )
+    {
         this.metadata = metadata;
     }
 }

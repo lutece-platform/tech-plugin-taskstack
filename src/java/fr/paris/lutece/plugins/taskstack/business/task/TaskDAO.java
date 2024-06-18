@@ -57,6 +57,7 @@ public class TaskDAO implements ITaskDAO
     // Constants
     private static final String SQL_QUERY_SELECT = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id = ?";
     private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";
+    private static final String SQL_QUERY_SELECT_BY_VALIDITY = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE stack_task.last_update_date < now() - interval '?' day;";
     private static final String SQL_QUERY_SEARCH = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE ${task_type_criteria} AND ${task_status_criteria} AND ${nb_days_creation_criteria} ${order_criteria}";
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task ( code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, to_json(?::json) ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task WHERE id = ? ";
@@ -166,6 +167,22 @@ public class TaskDAO implements ITaskDAO
         }
 
         return null;
+    }
+
+    @Override
+    public List<Task> selectExpiredTask( final String retention, final Plugin plugin ) throws JsonProcessingException
+    {
+        final List<Task> expiredTasks = new ArrayList<>( );
+        try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_VALIDITY.replace( "?", retention ), plugin ) )
+        {
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                expiredTasks.add( this.getTask( daoUtil ) );
+            }
+        }
+        return expiredTasks;
     }
 
     @Override

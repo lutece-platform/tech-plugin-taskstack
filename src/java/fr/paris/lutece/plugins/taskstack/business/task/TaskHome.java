@@ -73,6 +73,18 @@ public class TaskHome
         }
     }
 
+    public static List<Task> getExpiredTasks( final String retention ) throws TaskStackException
+    {
+        try
+        {
+            return _taskDao.selectExpiredTask( retention, _plugin );
+        }
+        catch( JsonProcessingException e )
+        {
+            throw new TaskStackException( "An error occurred trying to find expired Tasks: ", e );
+        }
+    }
+
     public static Task create( final Task task ) throws TaskStackException
     {
         try

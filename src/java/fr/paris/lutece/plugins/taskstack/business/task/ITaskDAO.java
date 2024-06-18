@@ -52,6 +52,8 @@ public interface ITaskDAO
 
     Task selectByCode( String strCode, Plugin plugin ) throws JsonProcessingException;
 
+    List<Task> selectExpiredTask( final String retention, final Plugin plugin ) throws JsonProcessingException;
+
     void delete( final int nIdTask, final Plugin plugin );
 
     List<Task> search( final String strTaskType, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,

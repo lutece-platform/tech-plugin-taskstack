@@ -18,5 +18,15 @@
         <max-core-version/>	
     </core-version-dependency>
 
+    <!-- Daemons -->
+    <daemons>
+        <daemon>
+            <daemon-id>purgeExpiredTasksDaemon</daemon-id>
+            <daemon-name>taskstack.daemon.purgeExpiredTasksDaemon.name</daemon-name>
+            <daemon-description>taskstack.daemon.purgeExpiredTasksDaemon.description</daemon-description>
+            <daemon-class>fr.paris.lutece.plugins.taskstack.daemon.PurgeExpiredTasksDaemon</daemon-class>
+        </daemon>
+    </daemons>
+
     
 </plug-in>

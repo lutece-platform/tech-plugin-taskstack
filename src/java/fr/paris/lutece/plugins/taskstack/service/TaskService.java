@@ -186,16 +186,14 @@ public class TaskService
         return history.stream( ).map( taskChange -> DtoMapper.toTaskChangeDto( taskChange, _strTaskCode ) ).collect( Collectors.toList( ) );
     }
 
-    public void deleteTask( final String _strTaskCode ) throws TaskStackException
+    public void deleteTask( final Task task ) throws TaskStackException
     {
-        final Task existingTask = TaskHome.get( _strTaskCode );
-
-        if ( existingTask == null )
+        if ( task == null || task.getId( ) == null )
         {
-            throw new TaskStackException( "Could not find task with code " + _strTaskCode );
+            throw new TaskStackException( "Could not delete null task " );
         }
-        TaskChangeHome.deleteAllByTaskId( existingTask.getId( ) );
-        TaskHome.delete( existingTask.getId( ) );
+        TaskChangeHome.deleteAllByTaskId( task.getId( ) );
+        TaskHome.delete( task.getId( ) );
     }
 
     public List<TaskDto> search( final String _strTaskType, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
