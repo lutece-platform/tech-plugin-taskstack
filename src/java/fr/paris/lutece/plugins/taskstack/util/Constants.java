@@ -37,6 +37,7 @@ public class Constants
 {
 
     public static final String PLUGIN_PATH = "taskstack";
+    public static final String VERSION_V1 = "/v1";
 
     public static final String PARAM_CLIENT_CODE = "client_code";
     public static final String PARAM_APPLICATION_CODE = "application_code";

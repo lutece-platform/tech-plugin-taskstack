@@ -65,7 +65,7 @@ import javax.ws.rs.core.Response;
 /**
  * TaskStackIdentityRest
  */
-@Path( RestConstants.BASE_PATH + Constants.PLUGIN_PATH )
+@Path( RestConstants.BASE_PATH + Constants.PLUGIN_PATH + Constants.VERSION_V1 )
 public class TaskStackIdentityRest
 {
 
