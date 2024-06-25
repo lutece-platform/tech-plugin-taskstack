@@ -124,9 +124,9 @@ public class TaskStackRequestValidator
             throw new TaskStackException( "Provided task must have a resource id" );
         }
 
-        if ( !"CUID".equals( request.getTask( ).getResourceType( ) ) )
+        if ( StringUtils.isBlank( request.getTask( ).getResourceType( ) ) )
         {
-            throw new TaskStackException( "Provided task resource type is invalid. Only 'CUID' is allowed" );
+            throw new TaskStackException( "Provided task must have a resource type." );
         }
     }
 
