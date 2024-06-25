@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.taskstack.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeType;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
 import fr.paris.lutece.plugins.taskstack.rs.request.common.RequestAuthor;
@@ -41,70 +42,69 @@ import java.sql.Timestamp;
 
 public class TaskChangeDto
 {
-    private String _strTaskCode;
+    @JsonProperty("task_code")
+    private String taskCode;
+
+    @JsonProperty("request_author")
     private RequestAuthor author;
-    private String _strClientCode;
-    private TaskStatusType _enumTaskStatus;
-    private TaskChangeType _enumTaskChangeType;
-    private Timestamp _dateTaskChangeDate;
 
-    public String getTaskCode( )
-    {
-        return _strTaskCode;
+    @JsonProperty("client_code")
+    private String clientCode;
+
+    @JsonProperty("task_status")
+    private TaskStatusType taskStatus;
+
+    @JsonProperty("task_change_type")
+    private TaskChangeType taskChangeType;
+
+    @JsonProperty("task_change_date")
+    private Timestamp taskChangeDate;
+
+    public String getTaskCode() {
+        return taskCode;
     }
 
-    public void setTaskCode( String _strTaskCode )
-    {
-        this._strTaskCode = _strTaskCode;
+    public void setTaskCode(String taskCode) {
+        this.taskCode = taskCode;
     }
 
-    public RequestAuthor getAuthor( )
-    {
+    public RequestAuthor getAuthor() {
         return author;
     }
 
-    public void setAuthor( RequestAuthor author )
-    {
+    public void setAuthor(RequestAuthor author) {
         this.author = author;
     }
 
-    public String getClientCode( )
-    {
-        return _strClientCode;
+    public String getClientCode() {
+        return clientCode;
     }
 
-    public void setClientCode( String _strClientCode )
-    {
-        this._strClientCode = _strClientCode;
+    public void setClientCode(String clientCode) {
+        this.clientCode = clientCode;
     }
 
-    public TaskStatusType getTaskStatus( )
-    {
-        return _enumTaskStatus;
+    public TaskStatusType getTaskStatus() {
+        return taskStatus;
     }
 
-    public void setTaskStatus( TaskStatusType _enumTaskStatus )
-    {
-        this._enumTaskStatus = _enumTaskStatus;
+    public void setTaskStatus(TaskStatusType taskStatus) {
+        this.taskStatus = taskStatus;
     }
 
-    public TaskChangeType getTaskChangeType( )
-    {
-        return _enumTaskChangeType;
+    public TaskChangeType getTaskChangeType() {
+        return taskChangeType;
     }
 
-    public void setTaskChangeType( TaskChangeType _enumTaskChangeType )
-    {
-        this._enumTaskChangeType = _enumTaskChangeType;
+    public void setTaskChangeType(TaskChangeType taskChangeType) {
+        this.taskChangeType = taskChangeType;
     }
 
-    public Timestamp getTaskChangeDate( )
-    {
-        return _dateTaskChangeDate;
+    public Timestamp getTaskChangeDate() {
+        return taskChangeDate;
     }
 
-    public void setTaskChangeDate( Timestamp _dateTaskChangeDate )
-    {
-        this._dateTaskChangeDate = _dateTaskChangeDate;
+    public void setTaskChangeDate(Timestamp taskChangeDate) {
+        this.taskChangeDate = taskChangeDate;
     }
 }
