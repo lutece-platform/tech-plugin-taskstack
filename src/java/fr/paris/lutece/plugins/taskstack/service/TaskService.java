@@ -189,17 +189,15 @@ public class TaskService
     {
         final List<Task> tasks = TaskHome.get( strResourceId, strResourceType );
 
-        if ( tasks == null || tasks.isEmpty( ) )
-        {
-            throw new TaskNotFoundException( "No tasks found for resource id " + strResourceId + " and resource type " + strResourceType );
-        }
-
         final List<TaskDto> taskDtos = new ArrayList<>( );
-        for ( final Task task : tasks )
+        if( tasks != null && !tasks.isEmpty( ) )
         {
-            final TaskDto taskDto = DtoMapper.toTaskDto( task );
-            taskDto.getTaskChanges( ).addAll( this.getTaskHistory( task.getTaskCode( ) ) );
-            taskDtos.add( taskDto );
+            for ( final Task task : tasks )
+            {
+                final TaskDto taskDto = DtoMapper.toTaskDto( task );
+                taskDto.getTaskChanges( ).addAll( this.getTaskHistory( task.getTaskCode( ) ) );
+                taskDtos.add( taskDto );
+            }
         }
 
         return taskDtos;
