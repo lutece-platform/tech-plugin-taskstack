@@ -34,13 +34,13 @@
 package fr.paris.lutece.plugins.taskstack.service;
 
 import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
-import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
+import fr.paris.lutece.plugins.taskstack.exception.TaskValidationException;
 
 public interface ITaskManagement
 {
     String getTaskType( );
 
-    void doBefore( final String strResourceId, final String strResourceType, final TaskStatusType status ) throws TaskStackException;
+    void doBefore( final String strResourceId, final String strResourceType, final TaskStatusType status ) throws TaskValidationException;
 
-    void doAfter( final String strResourceId, final String strResourceType, final TaskStatusType status ) throws TaskStackException;
+    void doAfter( final String strResourceId, final String strResourceType, final TaskStatusType status ) throws TaskValidationException;
 }

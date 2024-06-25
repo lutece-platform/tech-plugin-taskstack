@@ -44,6 +44,7 @@ import fr.paris.lutece.plugins.taskstack.dto.DtoMapper;
 import fr.paris.lutece.plugins.taskstack.dto.TaskChangeDto;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
+import fr.paris.lutece.plugins.taskstack.exception.TaskValidationException;
 import fr.paris.lutece.plugins.taskstack.rs.request.common.RequestAuthor;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.sql.TransactionManager;
@@ -81,13 +82,21 @@ public class TaskService
         TransactionManager.beginTransaction( null );
         try
         {
+            boolean validationError = false;
             taskDto.setTaskCode( UUID.randomUUID( ).toString( ) );
             taskDto.setLastUpdateClientCode( clientCode );
             taskDto.setTaskStatus( TaskStatusType.TODO );
 
             if ( taskManagement != null )
             {
-                taskManagement.doBefore( taskDto.getResourceId( ), taskDto.getResourceType( ), taskDto.getTaskStatus( ) );
+                try
+                {
+                    taskManagement.doBefore( taskDto.getResourceId( ), taskDto.getResourceType( ), taskDto.getTaskStatus( ) );
+                }
+                catch( final TaskValidationException e )
+                {
+                    validationError = true;
+                }
             }
 
             final Task task = DtoMapper.toTask( taskDto );
@@ -95,8 +104,8 @@ public class TaskService
 
             final TaskChange taskChange = new TaskChange( );
             taskChange.setTaskChangeDate( task.getCreationDate( ) );
-            taskChange.setTaskChangeType( TaskChangeType.CREATED );
-            taskChange.setTaskStatus( taskDto.getTaskStatus( ) );
+            taskChange.setTaskChangeType( validationError ? TaskChangeType.REFUSED : TaskChangeType.CREATED );
+            taskChange.setTaskStatus( validationError ? TaskStatusType.REFUSED : taskDto.getTaskStatus( ) );
             taskChange.setIdTask( task.getId( ) );
             taskChange.setClientCode( clientCode );
             taskChange.setAuthorType( author.getType( ).name( ) );

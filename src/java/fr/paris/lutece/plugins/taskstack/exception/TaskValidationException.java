@@ -31,12 +31,28 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.business.task;
+package fr.paris.lutece.plugins.taskstack.exception;
 
-public enum TaskChangeType
+public class TaskValidationException extends TaskStackException
 {
-    CREATED,
-    UPDATED,
-    DELETED,
-    REFUSED
+
+    /**
+     * @param strError
+     *            error message
+     */
+    public TaskValidationException( final String strError )
+    {
+        this( strError, null );
+    }
+
+    /**
+     * @param strError
+     *            error message
+     * @param error
+     *            error exception
+     */
+    public TaskValidationException( final String strError, final Exception error )
+    {
+        super( strError, error );
+    }
 }
