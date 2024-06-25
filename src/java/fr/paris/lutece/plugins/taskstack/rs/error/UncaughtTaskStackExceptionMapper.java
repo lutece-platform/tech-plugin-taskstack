@@ -31,16 +31,42 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.rs.dto.common;
+package fr.paris.lutece.plugins.taskstack.rs.error;
 
-public enum ResponseStatusType
+import fr.paris.lutece.plugins.rest.service.mapper.GenericUncaughtExceptionMapper;
+import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
+import fr.paris.lutece.plugins.taskstack.rs.dto.common.ResponseDto;
+import fr.paris.lutece.plugins.taskstack.rs.dto.common.ResponseStatusFactory;
+import fr.paris.lutece.plugins.taskstack.util.Constants;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
+
+/**
+ * Exception mapper designed to intercept uncaught {@link TaskStackException}.<br/>
+ */
+@Provider
+public class UncaughtTaskStackExceptionMapper extends GenericUncaughtExceptionMapper<TaskStackException, ResponseDto>
 {
-    OK,
-    SUCCESS,
-    BAD_REQUEST,
-    UNAUTHORIZED,
-    FORBIDDEN,
-    NOT_FOUND,
-    CONFLICT,
-    INTERNAL_SERVER_ERROR
+    @Override
+    protected Response.Status getStatus( )
+    {
+        return Response.Status.BAD_REQUEST;
+    }
+
+    @Override
+    protected ResponseDto buildEntity( final TaskStackException e )
+    {
+        final ResponseDto response = new ResponseDto( );
+        response.setStatus( ResponseStatusFactory.badRequest( ).setMessage( ERROR_DURING_TREATMENT + " :: " + e.getMessage( ) )
+                .setMessageKey( Constants.PROPERTY_REST_ERROR_DURING_TREATMENT ) );
+        return response;
+    }
+
+    @Override
+    protected String getType( )
+    {
+        return MediaType.APPLICATION_JSON;
+    }
 }

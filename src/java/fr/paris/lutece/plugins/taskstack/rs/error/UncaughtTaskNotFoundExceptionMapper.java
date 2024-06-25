@@ -31,16 +31,45 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.rs.dto.common;
+package fr.paris.lutece.plugins.taskstack.rs.error;
 
-public enum ResponseStatusType
+import fr.paris.lutece.plugins.rest.service.mapper.GenericUncaughtExceptionMapper;
+import fr.paris.lutece.plugins.taskstack.exception.TaskNotFoundException;
+import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
+import fr.paris.lutece.plugins.taskstack.rs.dto.common.ResponseDto;
+import fr.paris.lutece.plugins.taskstack.rs.dto.common.ResponseStatusFactory;
+import fr.paris.lutece.plugins.taskstack.util.Constants;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
+
+/**
+ * Exception mapper designed to intercept uncaught {@link TaskStackException}.<br/>
+ */
+@Provider
+public class UncaughtTaskNotFoundExceptionMapper extends GenericUncaughtExceptionMapper<TaskNotFoundException, ResponseDto>
 {
-    OK,
-    SUCCESS,
-    BAD_REQUEST,
-    UNAUTHORIZED,
-    FORBIDDEN,
-    NOT_FOUND,
-    CONFLICT,
-    INTERNAL_SERVER_ERROR
+    public static final String ERROR_NO_TASK_FOUND = "No task found.";
+
+    @Override
+    protected Response.Status getStatus( )
+    {
+        return Response.Status.NOT_FOUND;
+    }
+
+    @Override
+    protected ResponseDto buildEntity( final TaskNotFoundException e )
+    {
+        final ResponseDto response = new ResponseDto( );
+        response.setStatus( ResponseStatusFactory.notFound( ).setMessage( ERROR_NO_TASK_FOUND + " :: " + e.getMessage( ) )
+                .setMessageKey( Constants.PROPERTY_REST_ERROR_NO_TASK_FOUND) );
+        return response;
+    }
+
+    @Override
+    protected String getType( )
+    {
+        return MediaType.APPLICATION_JSON;
+    }
 }

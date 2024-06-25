@@ -59,4 +59,6 @@ public class Constants
     public static final String KEY_HTTP_CODE = "http_code";
 
     public static final String PROPERTY_REST_INFO_SUCCESSFUL_OPERATION = "taskstack.rest.info.successful.operation";
+    public static final String PROPERTY_REST_ERROR_DURING_TREATMENT = "taskstack.rest.error.during.treatment";
+    public static final String PROPERTY_REST_ERROR_NO_TASK_FOUND = "taskstack.rest.error.no.task.found";
 }

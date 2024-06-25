@@ -31,16 +31,28 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.rs.dto.common;
+package fr.paris.lutece.plugins.taskstack.exception;
 
-public enum ResponseStatusType
+public class TaskNotFoundException extends TaskStackException
 {
-    OK,
-    SUCCESS,
-    BAD_REQUEST,
-    UNAUTHORIZED,
-    FORBIDDEN,
-    NOT_FOUND,
-    CONFLICT,
-    INTERNAL_SERVER_ERROR
+
+    /**
+     * @param strError
+     *            error message
+     */
+    public TaskNotFoundException(final String strError )
+    {
+        this( strError, null );
+    }
+
+    /**
+     * @param strError
+     *            error message
+     * @param error
+     *            error exception
+     */
+    public TaskNotFoundException(final String strError, final Exception error )
+    {
+        super( strError, error );
+    }
 }

@@ -43,6 +43,7 @@ import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
 import fr.paris.lutece.plugins.taskstack.dto.DtoMapper;
 import fr.paris.lutece.plugins.taskstack.dto.TaskChangeDto;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
+import fr.paris.lutece.plugins.taskstack.exception.TaskNotFoundException;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 import fr.paris.lutece.plugins.taskstack.exception.TaskValidationException;
 import fr.paris.lutece.plugins.taskstack.rs.request.common.RequestAuthor;
@@ -133,7 +134,7 @@ public class TaskService
         final Task existingTask = TaskHome.get( strTaskCode );
         if ( existingTask == null )
         {
-            throw new TaskStackException( "Could not find task with code " + strTaskCode );
+            throw new TaskNotFoundException( "Could not find task with code " + strTaskCode );
         }
 
         final ITaskManagement taskManagement = SpringContextService.getBeansOfType( ITaskManagement.class ).stream( )
@@ -170,13 +171,13 @@ public class TaskService
         }
     }
 
-    public TaskDto getTask( final String _strTaskCode ) throws TaskStackException
+    public TaskDto getTask( final String strTaskCode ) throws TaskStackException
     {
-        final Task existingTask = TaskHome.get( _strTaskCode );
+        final Task existingTask = TaskHome.get( strTaskCode );
 
         if ( existingTask == null )
         {
-            throw new TaskStackException( "Could not find task with code " + _strTaskCode );
+            throw new TaskNotFoundException( "Could not find task with code " + strTaskCode );
         }
 
         final TaskDto taskDto = DtoMapper.toTaskDto( existingTask );
@@ -190,7 +191,7 @@ public class TaskService
 
         if ( tasks == null || tasks.isEmpty( ) )
         {
-            throw new TaskStackException( "No tasks found for resource id " + strResourceId + " and resource type " + strResourceType );
+            throw new TaskNotFoundException( "No tasks found for resource id " + strResourceId + " and resource type " + strResourceType );
         }
 
         final List<TaskDto> taskDtos = new ArrayList<>( );
@@ -213,7 +214,7 @@ public class TaskService
             return search.stream( ).map( DtoMapper::toTaskDto )
                     .peek( taskDto -> taskDto.getTaskChanges( ).addAll( this.getTaskHistory( taskDto.getTaskCode( ) ) ) ).collect( Collectors.toList( ) );
         }
-        catch( Exception e )
+        catch( final Exception e )
         {
             throw new TaskStackException( "An error occurred during task search", e );
         }
