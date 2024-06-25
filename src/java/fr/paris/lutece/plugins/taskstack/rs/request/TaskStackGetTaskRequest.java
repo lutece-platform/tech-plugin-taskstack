@@ -68,7 +68,8 @@ public class TaskStackGetTaskRequest extends AbstractTaskStackRequest
             final TaskDto task = TaskService.instance( ).getTask( taskCode );
             final GetTaskResponse response = new GetTaskResponse( );
             response.setTask( task );
-            response.setStatus( ResponseStatusFactory.ok( ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
+            final String successMessage = String.format( "A task could be found with code %s.", taskCode );
+            response.setStatus( ResponseStatusFactory.ok( ).setMessage( successMessage ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
             return response;
         }
         catch( TaskStackException e )

@@ -68,7 +68,10 @@ public class TaskStackCreateTaskRequest extends AbstractTaskStackRequest
             final String taskCode = TaskService.instance( ).createTask( taskCreateRequest.getTask( ), _author, _strClientCode );
             final CreateTaskResponse response = new CreateTaskResponse( );
             response.setTaskCode( taskCode );
-            response.setStatus( ResponseStatusFactory.success( ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
+            final String successMessage = String.format( "A task has been successfully created for resource %s of type %s.",
+                    taskCreateRequest.getTask( ).getResourceId( ), taskCreateRequest.getTask( ).getResourceType( ) );
+            response.setStatus(
+                    ResponseStatusFactory.success( ).setMessage( successMessage ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
             return response;
         }
         catch( final TaskStackException e )

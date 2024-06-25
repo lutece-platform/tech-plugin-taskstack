@@ -63,7 +63,7 @@ public class UncaughtTaskNotFoundExceptionMapper extends GenericUncaughtExceptio
     {
         final ResponseDto response = new ResponseDto( );
         response.setStatus( ResponseStatusFactory.notFound( ).setMessage( ERROR_NO_TASK_FOUND + " :: " + e.getMessage( ) )
-                .setMessageKey( Constants.PROPERTY_REST_ERROR_NO_TASK_FOUND) );
+                .setMessageKey( Constants.PROPERTY_REST_ERROR_NO_TASK_FOUND ) );
         return response;
     }
 

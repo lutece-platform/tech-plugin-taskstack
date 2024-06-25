@@ -74,7 +74,8 @@ public class TaskStackGetTaskByResourceRequest extends AbstractTaskStackRequest
             final List<TaskDto> tasks = TaskService.instance( ).getTasks( taskResourceId, taskResourceType );
             final GetTaskListResponse response = new GetTaskListResponse( );
             response.getTasks( ).addAll( tasks );
-            response.setStatus( ResponseStatusFactory.ok( ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
+            final String successMessage = String.format( "One or several tasks could be found for resource %s of type %s.", taskResourceId, taskResourceType );
+            response.setStatus( ResponseStatusFactory.ok( ).setMessage( successMessage ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
             return response;
         }
         catch( final TaskStackException e )

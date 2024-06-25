@@ -67,7 +67,7 @@ public class ResponseStatusFactory
 
     public static ResponseStatus forbidden( )
     {
-        return new ResponseStatus( 403, FORBIDDEN);
+        return new ResponseStatus( 403, FORBIDDEN );
     }
 
     public static ResponseStatus notFound( )

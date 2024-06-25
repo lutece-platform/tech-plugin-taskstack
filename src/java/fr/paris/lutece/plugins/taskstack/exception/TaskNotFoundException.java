@@ -40,7 +40,7 @@ public class TaskNotFoundException extends TaskStackException
      * @param strError
      *            error message
      */
-    public TaskNotFoundException(final String strError )
+    public TaskNotFoundException( final String strError )
     {
         this( strError, null );
     }
@@ -51,7 +51,7 @@ public class TaskNotFoundException extends TaskStackException
      * @param error
      *            error exception
      */
-    public TaskNotFoundException(final String strError, final Exception error )
+    public TaskNotFoundException( final String strError, final Exception error )
     {
         super( strError, error );
     }
