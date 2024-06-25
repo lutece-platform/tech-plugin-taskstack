@@ -138,4 +138,16 @@ public class TaskHome
     {
         return _taskDao.search( strTaskType, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, _plugin );
     }
+
+    public static List<Task> get( final String strResourceId, final String strResourceType ) throws TaskStackException
+    {
+        try
+        {
+            return _taskDao.selectByIdAndResourceType( strResourceId, strResourceType, _plugin );
+        }
+        catch( JsonProcessingException e )
+        {
+            throw new TaskStackException( "An error occurred trying to get Tasks by resource id and type: ", e );
+        }
+    }
 }

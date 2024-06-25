@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.rest.service.RestConstants;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 import fr.paris.lutece.plugins.taskstack.rs.dto.CreateTaskRequest;
 import fr.paris.lutece.plugins.taskstack.rs.dto.CreateTaskResponse;
+import fr.paris.lutece.plugins.taskstack.rs.dto.GetTaskListResponse;
 import fr.paris.lutece.plugins.taskstack.rs.dto.GetTaskResponse;
 import fr.paris.lutece.plugins.taskstack.rs.dto.GetTaskStatusResponse;
 import fr.paris.lutece.plugins.taskstack.rs.dto.SearchTaskRequest;
@@ -44,6 +45,7 @@ import fr.paris.lutece.plugins.taskstack.rs.dto.SearchTaskResponse;
 import fr.paris.lutece.plugins.taskstack.rs.dto.UpdateTaskStatusRequest;
 import fr.paris.lutece.plugins.taskstack.rs.dto.UpdateTaskStatusResponse;
 import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackCreateTaskRequest;
+import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackGetTaskByResourceRequest;
 import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackGetTaskRequest;
 import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackGetTaskStatusRequest;
 import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackSearchTaskRequest;
@@ -59,6 +61,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -120,6 +123,21 @@ public class TaskStackIdentityRest
     {
         final TaskStackGetTaskRequest request = new TaskStackGetTaskRequest( taskCode, strHeaderClientCode, authorName, authorType );
         final GetTaskResponse response = (GetTaskResponse) request.doRequest( );
+        return Response.status( response.getStatus( ).getHttpCode( ) ).entity( response ).type( MediaType.APPLICATION_JSON_TYPE ).build( );
+    }
+
+    @GET
+    @Path( Constants.TASK_PATH )
+    @Produces( MediaType.APPLICATION_JSON )
+    public Response getTaskByResourceIdAndType( @QueryParam( Constants.TASK_RESOURCE_ID_PARAM ) final String taskResourceId,
+            @QueryParam( Constants.TASK_RESOURCE_TYPE_PARAM ) final String taskResourceType,
+            @HeaderParam( Constants.PARAM_CLIENT_CODE ) final String strHeaderClientCode, @HeaderParam( Constants.PARAM_AUTHOR_NAME ) final String authorName,
+            @HeaderParam( Constants.PARAM_AUTHOR_TYPE ) final String authorType,
+            @HeaderParam( Constants.PARAM_APPLICATION_CODE ) @DefaultValue( "" ) final String strHeaderAppCode ) throws TaskStackException
+    {
+        final TaskStackGetTaskByResourceRequest request = new TaskStackGetTaskByResourceRequest( taskResourceId, taskResourceType, strHeaderClientCode,
+                authorName, authorType );
+        final GetTaskListResponse response = (GetTaskListResponse) request.doRequest( );
         return Response.status( response.getStatus( ).getHttpCode( ) ).entity( response ).type( MediaType.APPLICATION_JSON_TYPE ).build( );
     }
 

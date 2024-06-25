@@ -37,7 +37,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TaskDto
@@ -91,6 +93,9 @@ public class TaskDto
      */
     @JsonProperty( "task_status" )
     protected TaskStatusType taskStatus;
+
+    @JsonProperty( "task_history" )
+    protected List<TaskChangeDto> taskChanges = new ArrayList<>( );
 
     /**
      * Additional data that must be provided as key:value strings.
@@ -176,6 +181,16 @@ public class TaskDto
     public void setTaskStatus( TaskStatusType taskStatus )
     {
         this.taskStatus = taskStatus;
+    }
+
+    public List<TaskChangeDto> getTaskChanges( )
+    {
+        return taskChanges;
+    }
+
+    public void setTaskChanges( List<TaskChangeDto> taskChanges )
+    {
+        this.taskChanges = taskChanges;
     }
 
     public Map<String, String> getMetadata( )

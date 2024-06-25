@@ -46,6 +46,8 @@ public class Constants
 
     public static final String TASK_PATH = "/task";
     public static final String TASK_CODE_PARAM = "task_code";
+    public static final String TASK_RESOURCE_TYPE_PARAM = "resource_type";
+    public static final String TASK_RESOURCE_ID_PARAM = "resource_id";
     public static final String TASK_STATUS_PATH = "/status";
     public static final String TASK_STATUS_PATH_WITH_PARAM = TASK_STATUS_PATH + "/{" + TASK_CODE_PARAM + "}";
     public static final String SEARCH_TASK_PATH = "/search";

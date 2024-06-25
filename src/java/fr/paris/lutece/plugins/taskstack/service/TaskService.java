@@ -49,6 +49,7 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.sql.TransactionManager;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -169,21 +170,44 @@ public class TaskService
             throw new TaskStackException( "Could not find task with code " + _strTaskCode );
         }
 
-        return DtoMapper.toTaskDto( existingTask );
+        final TaskDto taskDto = DtoMapper.toTaskDto( existingTask );
+        taskDto.getTaskChanges( ).addAll( this.getTaskHistory( taskDto.getTaskCode( ) ) );
+        return taskDto;
     }
 
-    public List<TaskChangeDto> getTaskHistory( final String _strTaskCode ) throws TaskStackException
+    public List<TaskDto> getTasks( final String strResourceId, final String strResourceType ) throws TaskStackException
     {
-        final Task existingTask = TaskHome.get( _strTaskCode );
+        final List<Task> tasks = TaskHome.get( strResourceId, strResourceType );
 
-        if ( existingTask == null )
+        if ( tasks == null || tasks.isEmpty( ) )
         {
-            throw new TaskStackException( "Could not find task with code " + _strTaskCode );
+            throw new TaskStackException( "No tasks found for resource id " + strResourceId + " and resource type " + strResourceType );
         }
 
-        final List<TaskChange> history = TaskChangeHome.getHistory( _strTaskCode );
+        final List<TaskDto> taskDtos = new ArrayList<>( );
+        for ( final Task task : tasks )
+        {
+            final TaskDto taskDto = DtoMapper.toTaskDto( task );
+            taskDto.getTaskChanges( ).addAll( this.getTaskHistory( task.getTaskCode( ) ) );
+            taskDtos.add( taskDto );
+        }
 
-        return history.stream( ).map( taskChange -> DtoMapper.toTaskChangeDto( taskChange, _strTaskCode ) ).collect( Collectors.toList( ) );
+        return taskDtos;
+    }
+
+    public List<TaskDto> search( final String _strTaskType, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
+            final CreationDateOrdering creationDateOrdering ) throws TaskStackException
+    {
+        try
+        {
+            final List<Task> search = TaskHome.search( _strTaskType, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering );
+            return search.stream( ).map( DtoMapper::toTaskDto )
+                    .peek( taskDto -> taskDto.getTaskChanges( ).addAll( this.getTaskHistory( taskDto.getTaskCode( ) ) ) ).collect( Collectors.toList( ) );
+        }
+        catch( Exception e )
+        {
+            throw new TaskStackException( "An error occurred during task search", e );
+        }
     }
 
     public void deleteTask( final Task task ) throws TaskStackException
@@ -196,18 +220,10 @@ public class TaskService
         TaskHome.delete( task.getId( ) );
     }
 
-    public List<TaskDto> search( final String _strTaskType, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
-            final CreationDateOrdering creationDateOrdering ) throws TaskStackException
+    private List<TaskChangeDto> getTaskHistory( final String strTaskCode )
     {
-        try
-        {
-            final List<Task> search = TaskHome.search( _strTaskType, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering );
-            return search.stream( ).map( DtoMapper::toTaskDto ).collect( Collectors.toList( ) );
-        }
-        catch( Exception e )
-        {
-            throw new TaskStackException( "An error occurred during task search", e );
-        }
+        final List<TaskChange> history = TaskChangeHome.getHistory( strTaskCode );
+        return history.stream( ).map( taskChange -> DtoMapper.toTaskChangeDto( taskChange, strTaskCode ) ).collect( Collectors.toList( ) );
     }
 
 }

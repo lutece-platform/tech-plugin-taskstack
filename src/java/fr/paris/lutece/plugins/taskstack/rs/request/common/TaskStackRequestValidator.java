@@ -154,4 +154,20 @@ public class TaskStackRequestValidator
             throw new TaskStackException( "Provided task code is null or empty" );
         }
     }
+
+    public void validateTaskResourceId( final String taskResourceId ) throws TaskStackException
+    {
+        if ( StringUtils.isBlank( taskResourceId ) )
+        {
+            throw new TaskStackException( "Provided task resource id is null or empty" );
+        }
+    }
+
+    public void validateTaskResourceType( final String taskResourceType ) throws TaskStackException
+    {
+        if ( StringUtils.isBlank( taskResourceType ) )
+        {
+            throw new TaskStackException( "Provided task resource type is null or empty" );
+        }
+    }
 }

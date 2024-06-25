@@ -31,33 +31,28 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.taskstack.business.task;
+package fr.paris.lutece.plugins.taskstack.rs.dto;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
-import fr.paris.lutece.portal.service.plugin.Plugin;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
+import fr.paris.lutece.plugins.taskstack.rs.dto.common.ResponseDto;
 
-import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
-public interface ITaskDAO
+public class GetTaskListResponse extends ResponseDto
 {
-    void insert( final Task task, final Plugin plugin ) throws JsonProcessingException;
 
-    void update( final Task task, final Plugin plugin ) throws JsonProcessingException;
+    @JsonProperty( "tasks" )
+    private List<TaskDto> tasks = new ArrayList<>( );
 
-    Timestamp updateStatus( final String taskCode, final TaskStatusType newStatus, final String clientCode, Plugin plugin ) throws JsonProcessingException;
+    public List<TaskDto> getTasks( )
+    {
+        return tasks;
+    }
 
-    Task load( final int nIdTask, final Plugin plugin ) throws JsonProcessingException;
-
-    Task selectByCode( String strCode, Plugin plugin ) throws JsonProcessingException;
-
-    List<Task> selectExpiredTask( final String retention, final Plugin plugin ) throws JsonProcessingException;
-
-    void delete( final int nIdTask, final Plugin plugin );
-
-    List<Task> search( final String strTaskType, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-            final CreationDateOrdering creationDateOrdering, final Plugin plugin ) throws JsonProcessingException;
-
-    List<Task> selectByIdAndResourceType( final String strResourceId, final String strResourceType, final Plugin plugin ) throws JsonProcessingException;
+    public void setTasks( List<TaskDto> tasks )
+    {
+        this.tasks = tasks;
+    }
 }
