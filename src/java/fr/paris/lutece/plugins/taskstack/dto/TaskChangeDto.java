@@ -42,69 +42,81 @@ import java.sql.Timestamp;
 
 public class TaskChangeDto
 {
-    @JsonProperty("task_code")
+    @JsonProperty( "task_code" )
     private String taskCode;
 
-    @JsonProperty("request_author")
+    @JsonProperty( "request_author" )
     private RequestAuthor author;
 
-    @JsonProperty("client_code")
+    @JsonProperty( "client_code" )
     private String clientCode;
 
-    @JsonProperty("task_status")
+    @JsonProperty( "task_status" )
     private TaskStatusType taskStatus;
 
-    @JsonProperty("task_change_type")
+    @JsonProperty( "task_change_type" )
     private TaskChangeType taskChangeType;
 
-    @JsonProperty("task_change_date")
+    @JsonProperty( "task_change_date" )
     private Timestamp taskChangeDate;
 
-    public String getTaskCode() {
+    public String getTaskCode( )
+    {
         return taskCode;
     }
 
-    public void setTaskCode(String taskCode) {
+    public void setTaskCode( String taskCode )
+    {
         this.taskCode = taskCode;
     }
 
-    public RequestAuthor getAuthor() {
+    public RequestAuthor getAuthor( )
+    {
         return author;
     }
 
-    public void setAuthor(RequestAuthor author) {
+    public void setAuthor( RequestAuthor author )
+    {
         this.author = author;
     }
 
-    public String getClientCode() {
+    public String getClientCode( )
+    {
         return clientCode;
     }
 
-    public void setClientCode(String clientCode) {
+    public void setClientCode( String clientCode )
+    {
         this.clientCode = clientCode;
     }
 
-    public TaskStatusType getTaskStatus() {
+    public TaskStatusType getTaskStatus( )
+    {
         return taskStatus;
     }
 
-    public void setTaskStatus(TaskStatusType taskStatus) {
+    public void setTaskStatus( TaskStatusType taskStatus )
+    {
         this.taskStatus = taskStatus;
     }
 
-    public TaskChangeType getTaskChangeType() {
+    public TaskChangeType getTaskChangeType( )
+    {
         return taskChangeType;
     }
 
-    public void setTaskChangeType(TaskChangeType taskChangeType) {
+    public void setTaskChangeType( TaskChangeType taskChangeType )
+    {
         this.taskChangeType = taskChangeType;
     }
 
-    public Timestamp getTaskChangeDate() {
+    public Timestamp getTaskChangeDate( )
+    {
         return taskChangeDate;
     }
 
-    public void setTaskChangeDate(Timestamp taskChangeDate) {
+    public void setTaskChangeDate( Timestamp taskChangeDate )
+    {
         this.taskChangeDate = taskChangeDate;
     }
 }

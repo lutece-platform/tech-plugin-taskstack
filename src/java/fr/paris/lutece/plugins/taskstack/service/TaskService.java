@@ -94,7 +94,7 @@ public class TaskService
             {
                 try
                 {
-                    taskManagement.doBefore( taskDto.getResourceId( ), taskDto.getResourceType( ), taskDto.getTaskStatus( ) );
+                    taskManagement.doBefore( taskDto );
                 }
                 catch( final TaskValidationException e )
                 {
@@ -121,7 +121,7 @@ public class TaskService
 
             if ( taskManagement != null )
             {
-                taskManagement.doAfter( taskDto.getResourceId( ), taskDto.getResourceType( ), taskDto.getTaskStatus( ) );
+                taskManagement.doAfter( taskDto );
             }
 
             TransactionManager.commitTransaction( null );
@@ -146,12 +146,14 @@ public class TaskService
 
         final ITaskManagement taskManagement = SpringContextService.getBeansOfType( ITaskManagement.class ).stream( )
                 .filter( t -> Objects.equals( t.getTaskType( ), existingTask.getTaskType( ) ) ).findFirst( ).orElse( null );
+        final TaskDto existingTaskDto = DtoMapper.toTaskDto( existingTask );
+        existingTaskDto.setTaskStatus( newStatus );
         TransactionManager.beginTransaction( null );
         try
         {
             if ( taskManagement != null )
             {
-                taskManagement.doBefore( existingTask.getResourceId( ), existingTask.getResourceType( ), newStatus );
+                taskManagement.doBefore( existingTaskDto );
             }
             final Timestamp updateStatusTime = TaskHome.updateStatus( strTaskCode, newStatus, clientCode );
 
@@ -166,7 +168,7 @@ public class TaskService
             TaskChangeHome.create( taskChange );
             if ( taskManagement != null )
             {
-                taskManagement.doAfter( existingTask.getResourceId( ), existingTask.getResourceType( ), newStatus );
+                taskManagement.doAfter( existingTaskDto );
             }
 
             TransactionManager.commitTransaction( null );
@@ -197,7 +199,7 @@ public class TaskService
         final List<Task> tasks = TaskHome.get( strResourceId, strResourceType );
 
         final List<TaskDto> taskDtos = new ArrayList<>( );
-        if( tasks != null && !tasks.isEmpty( ) )
+        if ( tasks != null && !tasks.isEmpty( ) )
         {
             for ( final Task task : tasks )
             {
