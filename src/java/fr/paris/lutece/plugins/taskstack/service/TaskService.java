@@ -52,6 +52,7 @@ import fr.paris.lutece.util.sql.TransactionManager;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -75,7 +76,7 @@ public class TaskService
     {
     }
 
-    public String createTask( final TaskDto taskDto, final RequestAuthor author, final String clientCode ) throws TaskStackException
+    public TaskDto createTask( final TaskDto taskDto, final RequestAuthor author, final String clientCode ) throws TaskStackException
     {
         final Map<String, ITaskManagement> taskManagementBeans = SpringContextService.getContext( ).getBeansOfType( ITaskManagement.class );
         final ITaskManagement taskManagement = taskManagementBeans.values( ).stream( ).filter( t -> Objects.equals( t.getTaskType( ), taskDto.getTaskType( ) ) )
@@ -84,6 +85,7 @@ public class TaskService
         try
         {
             boolean validationError = false;
+            Map<String,String> errMap = new HashMap<>( );
             taskDto.setTaskCode( UUID.randomUUID( ).toString( ) );
             taskDto.setLastUpdateClientCode( clientCode );
             taskDto.setTaskStatus( TaskStatusType.TODO );
@@ -97,6 +99,9 @@ public class TaskService
                 catch( final TaskValidationException e )
                 {
                     validationError = true;
+                    taskDto.setTaskStatus( TaskStatusType.REFUSED );
+                    errMap.put( "Error", e.getMessage( ) );
+                    taskDto.setMetadata( errMap );
                 }
             }
 
@@ -105,12 +110,13 @@ public class TaskService
 
             final TaskChange taskChange = new TaskChange( );
             taskChange.setTaskChangeDate( task.getCreationDate( ) );
-            taskChange.setTaskChangeType( validationError ? TaskChangeType.REFUSED : TaskChangeType.CREATED );
+            taskChange.setTaskChangeType( TaskChangeType.CREATED );
             taskChange.setTaskStatus( validationError ? TaskStatusType.REFUSED : taskDto.getTaskStatus( ) );
             taskChange.setIdTask( task.getId( ) );
             taskChange.setClientCode( clientCode );
             taskChange.setAuthorType( author.getType( ).name( ) );
             taskChange.setAuthorName( author.getName( ) );
+
             TaskChangeHome.create( taskChange );
 
             if ( taskManagement != null )
@@ -119,7 +125,8 @@ public class TaskService
             }
 
             TransactionManager.commitTransaction( null );
-            return taskDto.getTaskCode( );
+            
+            return taskDto;
         }
         catch( final Exception e )
         {

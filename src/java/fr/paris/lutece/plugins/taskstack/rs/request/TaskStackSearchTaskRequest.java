@@ -81,7 +81,7 @@ public class TaskStackSearchTaskRequest extends AbstractTaskStackRequest
             final SearchTaskResponse response = new SearchTaskResponse( );
             response.getTasks( ).addAll( searchResults );
             final String successMessage = String.format(
-                    "One or several tasks could be found with criteria task type = %s, task status = %s, number of days since creation = %s, creation date ordering = %s.",
+                    "Search result for criteria task type = %s, task status = %s, number of days since creation = %s, creation date ordering = %s.",
                     taskSearchRequest.getTaskType( ), taskStatus, taskSearchRequest.getNbDaysSinceCreated( ),
                     taskSearchRequest.getCreationDateOrdering( )!=null?taskSearchRequest.getCreationDateOrdering( ).name( ):null );
             response.setStatus( ResponseStatusFactory.ok( ).setMessage( successMessage ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );

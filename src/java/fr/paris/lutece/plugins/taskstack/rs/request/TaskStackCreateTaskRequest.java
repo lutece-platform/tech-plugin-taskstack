@@ -33,6 +33,8 @@
  */
 package fr.paris.lutece.plugins.taskstack.rs.request;
 
+import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
+import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 import fr.paris.lutece.plugins.taskstack.rs.dto.CreateTaskRequest;
 import fr.paris.lutece.plugins.taskstack.rs.dto.CreateTaskResponse;
@@ -65,13 +67,29 @@ public class TaskStackCreateTaskRequest extends AbstractTaskStackRequest
     {
         try
         {
-            final String taskCode = TaskService.instance( ).createTask( taskCreateRequest.getTask( ), _author, _strClientCode );
+            final TaskDto task = TaskService.instance( ).createTask( taskCreateRequest.getTask( ), _author, _strClientCode );
             final CreateTaskResponse response = new CreateTaskResponse( );
-            response.setTaskCode( taskCode );
-            final String successMessage = String.format( "A task has been successfully created for resource %s of type %s.",
-                    taskCreateRequest.getTask( ).getResourceId( ), taskCreateRequest.getTask( ).getResourceType( ) );
-            response.setStatus(
-                    ResponseStatusFactory.success( ).setMessage( successMessage ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
+            response.setTaskCode( task.getTaskCode( ) );
+            
+            if ( task.getTaskStatus( ).equals( TaskStatusType.TODO ) )
+            {
+	            final String successMessage = String.format( "A task has been successfully created for resource %s of type %s.",
+	                    taskCreateRequest.getTask( ).getResourceId( ), taskCreateRequest.getTask( ).getResourceType( ) );
+	            response.setStatus(
+	                    ResponseStatusFactory.success( ).setMessage( successMessage ).setMessageKey( Constants.PROPERTY_REST_INFO_SUCCESSFUL_OPERATION ) );
+            } 
+            else
+            {
+            	String message = String.format( "Task validation error for resource %s of type %s. ",
+	                    taskCreateRequest.getTask( ).getResourceId( ), taskCreateRequest.getTask( ).getResourceType( ) );
+            	if (task.getMetadata( ) !=null && task.getMetadata( ).containsKey( "Error") ) 
+            	{
+            		message += task.getMetadata( ).get( "Error");
+            	}
+	            response.setStatus(
+	                    ResponseStatusFactory.forbidden( ).setMessage( message ).setMessageKey( Constants.PROPERTY_REST_ERROR_DURING_TREATMENT ) );
+            }
+            
             return response;
         }
         catch( final TaskStackException e )
