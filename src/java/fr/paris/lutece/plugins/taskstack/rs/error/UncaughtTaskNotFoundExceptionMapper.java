@@ -53,13 +53,13 @@ public class UncaughtTaskNotFoundExceptionMapper extends GenericUncaughtExceptio
     public static final String ERROR_NO_TASK_FOUND = "No task found.";
 
     @Override
-    protected Response.Status getStatus( )
+    protected Response.Status getStatus( final TaskNotFoundException e )
     {
         return Response.Status.NOT_FOUND;
     }
 
     @Override
-    protected ResponseDto buildEntity( final TaskNotFoundException e )
+    protected ResponseDto getBody( final TaskNotFoundException e )
     {
         final ResponseDto response = new ResponseDto( );
         response.setStatus( ResponseStatusFactory.notFound( ).setMessage( ERROR_NO_TASK_FOUND + " :: " + e.getMessage( ) )

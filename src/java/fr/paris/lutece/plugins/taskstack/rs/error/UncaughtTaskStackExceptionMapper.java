@@ -50,13 +50,13 @@ import javax.ws.rs.ext.Provider;
 public class UncaughtTaskStackExceptionMapper extends GenericUncaughtExceptionMapper<TaskStackException, ResponseDto>
 {
     @Override
-    protected Response.Status getStatus( )
+    protected Response.Status getStatus( final TaskStackException e )
     {
         return Response.Status.BAD_REQUEST;
     }
 
     @Override
-    protected ResponseDto buildEntity( final TaskStackException e )
+    protected ResponseDto getBody( final TaskStackException e )
     {
         final ResponseDto response = new ResponseDto( );
         response.setStatus( ResponseStatusFactory.badRequest( ).setMessage( ERROR_DURING_TREATMENT + " :: " + e.getMessage( ) )

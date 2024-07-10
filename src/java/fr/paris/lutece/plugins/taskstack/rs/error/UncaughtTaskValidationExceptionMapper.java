@@ -51,13 +51,13 @@ import javax.ws.rs.ext.Provider;
 public class UncaughtTaskValidationExceptionMapper extends GenericUncaughtExceptionMapper<TaskValidationException, ResponseDto>
 {
     @Override
-    protected Response.Status getStatus( )
+    protected Response.Status getStatus( final TaskValidationException e )
     {
         return Response.Status.BAD_REQUEST;
     }
 
     @Override
-    protected ResponseDto buildEntity( final TaskValidationException e )
+    protected ResponseDto getBody( final TaskValidationException e )
     {
         final ResponseDto response = new ResponseDto( );
         response.setStatus( ResponseStatusFactory.forbidden( ).setMessage( ERROR_DURING_TREATMENT + " :: " + e.getMessage( ) )
