@@ -72,4 +72,10 @@ public class RequestAuthor
     {
         this.type = type;
     }
+
+    @Override
+    public String toString()
+    {
+        return name + " - " + type.name();
+    }
 }

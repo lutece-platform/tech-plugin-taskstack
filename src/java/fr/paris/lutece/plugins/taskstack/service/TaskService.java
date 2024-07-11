@@ -52,6 +52,7 @@ import fr.paris.lutece.util.sql.TransactionManager;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -212,12 +213,12 @@ public class TaskService
         return taskDtos;
     }
 
-    public List<TaskDto> search( final String _strTaskType, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
-            final CreationDateOrdering creationDateOrdering ) throws TaskStackException
+    public List<TaskDto> search(final String _strTaskCode, final String _strResourceId, final String _strResourceType, final String _strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
+                                final CreationDateOrdering creationDateOrdering ) throws TaskStackException
     {
         try
         {
-            final List<Task> search = TaskHome.search( _strTaskType, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering );
+            final List<Task> search = TaskHome.search( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering );
             return search.stream( ).map( DtoMapper::toTaskDto )
                     .peek( taskDto -> taskDto.getTaskChanges( ).addAll( this.getTaskHistory( taskDto.getTaskCode( ) ) ) ).collect( Collectors.toList( ) );
         }

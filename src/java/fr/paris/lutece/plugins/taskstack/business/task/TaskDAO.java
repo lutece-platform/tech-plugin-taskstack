@@ -41,6 +41,7 @@ import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -48,6 +49,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,7 +63,7 @@ public class TaskDAO implements ITaskDAO
     private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";
     private static final String SQL_QUERY_SELECT_BY_ID_AND_RESOURCE_TYPE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE resource_id = ? AND resource_type = ?";
     private static final String SQL_QUERY_SELECT_BY_VALIDITY = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE stack_task.last_update_date < now() - interval '?' day;";
-    private static final String SQL_QUERY_SEARCH = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE ${task_type_criteria} AND ${task_status_criteria} AND ${nb_days_creation_criteria} ${order_criteria}";
+    private static final String SQL_QUERY_SEARCH = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE ${task_code_criteria} AND ${task_resource_id_criteria} AND ${task_resource_type_criteria} AND ${task_type_criteria} AND ${task_creation_date_criteria} AND ${task_last_update_criteria} AND ${task_last_update_client_code_criteria} AND ${task_status_criteria} AND ${nb_days_creation_criteria} ${order_criteria}";
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task ( code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, to_json(?::json) ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task WHERE id = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE stack_task SET code = ?, resource_id = ?, resource_type = ?, type = ?, creation_date = ?, last_update_date = ?, last_update_client_code = ?, status = ?, metadata = to_json(?::json) WHERE code = ?";
@@ -199,11 +201,38 @@ public class TaskDAO implements ITaskDAO
     }
 
     @Override
-    public List<Task> search( String strTaskType, List<TaskStatusType> enumTaskStatus, Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering,
-            Plugin plugin ) throws JsonProcessingException
+    public List<Task> search(final String strTaskCode, final String strResourceId, final String strResourceType, String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, List<TaskStatusType> enumTaskStatus, Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering,
+                             Plugin plugin ) throws JsonProcessingException
     {
 
         String sqlQuerySearch = SQL_QUERY_SEARCH;
+        if ( StringUtils.isNotBlank( strTaskCode ) )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_code_criteria}", "code='" + strTaskCode + "'" );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_code_criteria}", "1=1" );
+        }
+
+        if ( StringUtils.isNotBlank( strResourceId ) )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_resource_id_criteria}", "resource_id='" + strResourceId + "'" );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_resource_id_criteria}", "1=1" );
+        }
+
+        if ( StringUtils.isNotBlank( strResourceType ) )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_resource_type_criteria}", "resource_type='" + strResourceType + "'" );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_resource_type_criteria}", "1=1" );
+        }
+
         if ( StringUtils.isNotBlank( strTaskType ) )
         {
             sqlQuerySearch = sqlQuerySearch.replace( "${task_type_criteria}", "type='" + strTaskType + "'" );
@@ -211,6 +240,35 @@ public class TaskDAO implements ITaskDAO
         else
         {
             sqlQuerySearch = sqlQuerySearch.replace( "${task_type_criteria}", "1=1" );
+        }
+
+        if(creationDate != null )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_creation_date_criteria}", "creation_date >= '" + creationDate +
+                    "' AND creation_date < '" + DateUtils.addDays(creationDate, 1) + "'" );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_creation_date_criteria}",  "1=1" );
+        }
+
+        if(lastUpdatedate != null )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_last_update_criteria}", "last_update_date >= '" + lastUpdatedate +
+                    "' AND last_update_date < '" + DateUtils.addDays(lastUpdatedate, 1) + "'" );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_last_update_criteria}",  "1=1" );
+        }
+
+        if ( StringUtils.isNotBlank( strLastUpdateClientCode ) )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_last_update_client_code_criteria}", "last_update_client_code='" + strLastUpdateClientCode + "'" );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( "${task_last_update_client_code_criteria}", "1=1" );
         }
 
         if ( enumTaskStatus != null && !enumTaskStatus.isEmpty( ) )

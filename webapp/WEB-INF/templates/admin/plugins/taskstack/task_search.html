@@ -1,0 +1,137 @@
+<@pageContainer>
+    <@rowBox>
+        <@boxHeader i18nTitleKey="taskstack.title">
+        </@boxHeader>
+        <@boxBody>
+            <@messages infos=infos />
+            <@messages errors=errors />
+            <@messages warnings=warnings />
+            <div style="padding: .5rem .5rem;">
+                <a class="btn btn-primary btn-empty" title="#i18n{identitystore.manage_identities.emptyFields}">
+                    <i class="fa fa-trash"></i>
+                </a>
+            </div>
+            <form class="form-inline" action="jsp/admin/plugins/taskstack/TaskSearch.jsp">
+                <div class="input-group">
+                    <@table id="search-result-table">
+                        <tr>
+                            <th onclick="sortTable(0, 'identity-table')">#i18n{taskstack.view_task_stack.code}</th>
+                            <th onclick="sortTable(1, 'identity-table')">#i18n{taskstack.view_task_stack.resource.id}</th>
+                            <th onclick="sortTable(2, 'identity-table')">#i18n{taskstack.view_task_stack.resource.type}</th>
+                            <th onclick="sortTable(3, 'identity-table')">#i18n{taskstack.view_task_stack.type}</th>
+                            <th onclick="sortTable(4, 'identity-table')">#i18n{taskstack.view_task_stack.date.creation}</th>
+                            <th onclick="sortTable(5, 'identity-table')">#i18n{taskstack.view_task_stack.date.last_update}</th>
+                            <th onclick="sortTable(6, 'identity-table')">#i18n{taskstack.view_task_stack.last_update_client_code}</th>
+                            <th onclick="sortTable(7, 'identity-table')">#i18n{taskstack.view_task_stack.status}</th>
+                        </tr>
+                        <@tableHeadBodySeparator />
+                        <tr>
+                            <td>
+                                <input class="form-control search-field" type="text" name="task_code"
+                                       placeholder="#i18n{taskstack.view_task_stack.code}" value="${task_code!''}" />
+                            </td>
+                            <td>
+                                <input class="form-control search-field" type="text" name="resource_id"
+                                       placeholder="#i18n{taskstack.view_task_stack.resource.id}" value="${resource_id!''}" />
+                            </td>
+                            <td>
+                                <input class="form-control search-field" type="text" name="resource_type"
+                                       placeholder="#i18n{taskstack.view_task_stack.resource.type}" value="${resource_type!''}" />
+                            </td>
+                            <td>
+                                <input class="form-control search-field" type="text" name="task_type"
+                                       placeholder="#i18n{taskstack.view_task_stack.type}" value="${task_type!''}" />
+                            </td>
+                            <td>
+                                <input class="form-control search-field" type="date" name="creation_date"
+                                       placeholder="DD/MM/YYYY" value="${creation_date!''}" />
+                            </td>
+                            <td>
+                                <input class="form-control search-field" type="date" name="last_update_date"
+                                       placeholder="DD/MM/YYYY" value="${last_update_date!''}" />
+                            </td>
+                            <td>
+                                <input class="form-control search-field" type="text" name="last_update_client_code"
+                                       placeholder="#i18n{taskstack.view_task_stack.last_update_client_code}" value="${last_update_client_code!''}" />
+                            </td>
+                            <td>
+                                <label for="task_status" />
+                                <select class="search-field form-select select-type" id="task_status" name="task_status" value="${task_status!''}" >
+                                    <option value="">#i18n{identitystore.view_change_history.no.type}</option>
+                                    <option value="TODO" <#if task_status! == "TODO"> selected="selected"</#if>>TODO</option>
+                                    <option value="IN_PROGRESS" <#if task_status! == "IN_PROGRESS"> selected="selected"</#if>>IN_PROGRESS</option>
+                                    <option value="PROCESSED" <#if task_status! == "PROCESSED"> selected="selected"</#if>>DEPROCESSEDLETE</option>
+                                    <option value="CANCELED" <#if task_status! == "CANCELED"> selected="selected"</#if>>CANCELED</option>
+                                    <option value="REFUSED" <#if task_status! == "REFUSED"> selected="selected"</#if>>REFUSED</option>
+                                </select>
+                            </td>
+                            <td>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit">
+                                        <span class="fa fa-search"></span>
+                                    </button>
+                                </span>
+                            </td>
+                        </tr>
+                    </@table>
+                </div>
+            </form>
+        <table id="task-stack-table" class="table table-condensed table-striped">
+            <tr>
+                <th onclick="sortTable(0, 'identity-table')">#i18n{taskstack.view_task_stack.code}</th>
+                <th onclick="sortTable(1, 'identity-table')">#i18n{taskstack.view_task_stack.resource.id}</th>
+                <th onclick="sortTable(2, 'identity-table')">#i18n{taskstack.view_task_stack.resource.type}</th>
+                <th onclick="sortTable(3, 'identity-table')">#i18n{taskstack.view_task_stack.type}</th>
+                <th onclick="sortTable(4, 'identity-table')">#i18n{taskstack.view_task_stack.date.creation}</th>
+                <th onclick="sortTable(5, 'identity-table')">#i18n{taskstack.view_task_stack.date.last_update}</th>
+                <th onclick="sortTable(6, 'identity-table')">#i18n{taskstack.view_task_stack.last_update_client_code}</th>
+                <th onclick="sortTable(7, 'identity-table')">#i18n{taskstack.view_task_stack.status}</th>
+                <th onclick="sortTable(8, 'identity-table')">#i18n{taskstack.view_task_stack.metadata}</th>
+            </tr>
+            <#if stack_task_list??  && stack_task_list?has_content>
+                <#list stack_task_list as stack_task>
+                    <tr>
+                        <td>${stack_task.taskCode!}</td>
+                        <td>${stack_task.resourceId!}</td>
+                        <td>${stack_task.resourceType!}</td>
+                        <td>${stack_task.taskType!}</td>
+                        <td>${stack_task.creationDate!}</td>
+                        <td>${stack_task.lastUpdateDate!}</td>
+                        <td>${stack_task.lastUpdateClientCode!}</td>
+                        <td>
+                            <#if stack_task.taskStatus == "TODO">
+                            <span class="badge bg-primary"> ${stack_task.taskStatus!} </span>
+                            <#elseif stack_task.taskStatus == "IN_PROGRESS">
+                            <span class="badge bg-success"> ${stack_task.taskStatus!} </span>
+                            <#elseif stack_task.taskStatus == "CANCELED">
+                            <span class="badge bg-warning"> ${stack_task.taskStatus!} </span>
+                            <#elseif stack_task.taskStatus == "DEPROCESSEDLETE">
+                            <span class="badge bg-danger"> ${stack_task.taskStatus!} </span>
+                            <#elseif stack_task.taskStatus == "REFUSED">
+                            <span class="badge bg-danger"> ${stack_task.taskStatus!} </span>
+                            <#else>
+                            ${stack_task.taskStatus!}
+                        </#if>
+                        </td>
+                        <td>
+                            <#list stack_task.metadata?keys as key>
+                                ${key} : ${stack_task.metadata[key]} <br/>
+                            </#list>
+                        </td>
+                        <td>
+                            <@offcanvas targetUrl="jsp/admin/plugins/taskstack/TaskSearch.jsp?view=viewTaskHistory&task_code=${stack_task.taskCode}" targetElement="#history-container" id="history-container-${stack_task?index}" title="#i18n{taskstack.view_task_stack.history.title}" btnTitle="#i18n{taskstack.view_task_stack.history.show}" btnIcon="eye" btnTitleShow=false size="auto" bodyClass="p-0" />
+                        </td>
+                    </tr>
+                </#list>
+            </#if>
+        </table>
+        </@boxBody>
+    </@rowBox>
+
+<script src="./js/admin/plugins/identitystore/table.js"></script>
+<script>
+    $('.btn-empty').click(function () {
+        $('.search-field').val('');
+    });
+</script>
+</@pageContainer>

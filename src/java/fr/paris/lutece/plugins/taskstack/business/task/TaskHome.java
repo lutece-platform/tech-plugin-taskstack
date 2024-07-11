@@ -42,6 +42,7 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 public class TaskHome
@@ -133,10 +134,10 @@ public class TaskHome
         _taskDao.delete( task.getId( ), _plugin );
     }
 
-    public static List<Task> search( final String strTaskType, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-            final CreationDateOrdering creationDateOrdering ) throws JsonProcessingException
+    public static List<Task> search(final String strTaskCode, final String strResourceId, final String strResourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
+                                    final CreationDateOrdering creationDateOrdering ) throws JsonProcessingException
     {
-        return _taskDao.search( strTaskType, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, _plugin );
+        return _taskDao.search( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, _plugin );
     }
 
     public static List<Task> get( final String strResourceId, final String strResourceType ) throws TaskStackException

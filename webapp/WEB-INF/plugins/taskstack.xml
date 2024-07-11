@@ -18,6 +18,18 @@
         <max-core-version/>	
     </core-version-dependency>
 
+    <!-- Admin features parameters -->
+    <admin-features>
+        <admin-feature>
+            <feature-id>TASKSTACK_MANAGEMENT</feature-id>
+            <feature-title>taskstack.title</feature-title>
+            <feature-description>taskstack.plugin.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/taskstack/TaskSearch.jsp</feature-url>
+            <feature-icon-url/>
+        </admin-feature>
+    </admin-features>
+
     <!-- Daemons -->
     <daemons>
         <daemon>

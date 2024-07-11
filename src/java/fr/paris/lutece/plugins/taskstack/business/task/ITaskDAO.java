@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 public interface ITaskDAO
@@ -56,8 +57,8 @@ public interface ITaskDAO
 
     void delete( final int nIdTask, final Plugin plugin );
 
-    List<Task> search( final String strTaskType, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-            final CreationDateOrdering creationDateOrdering, final Plugin plugin ) throws JsonProcessingException;
+    List<Task> search(final String strTaskCode, final String strRessourceId, final String strRessourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
+                      final CreationDateOrdering creationDateOrdering, final Plugin plugin ) throws JsonProcessingException;
 
     List<Task> selectByIdAndResourceType( final String strResourceId, final String strResourceType, final Plugin plugin ) throws JsonProcessingException;
 }

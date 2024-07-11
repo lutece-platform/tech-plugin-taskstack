@@ -1,0 +1,44 @@
+<@rowBox>
+    <@pageColumn>
+        <#assign title><strong>#i18n{taskstack.view_task_stack.history.title}</strong></#assign>
+        <@pageHeader title=title>
+
+        </@pageHeader>
+        <div id="history-container">
+            <table id="task-history-table" class="table rounded rounded-3 overflow-hidden border table-condensed table-hover mb-0">
+                <tr>
+                    <th onclick="sortTable(0, 'identity-table')">#i18n{taskstack.view_task_stack.code}</th>
+                    <th onclick="sortTable(1, 'identity-table')">#i18n{taskstack.view_task_history.author}</th>
+                    <th onclick="sortTable(2, 'identity-table')">#i18n{taskstack.view_task_history.clientcode}</th>
+                    <th onclick="sortTable(3, 'identity-table')">#i18n{taskstack.view_task_stack.status}</th>
+                    <th onclick="sortTable(4, 'identity-table')">#i18n{taskstack.view_task_history.change.type}</th>
+                    <th onclick="sortTable(5, 'identity-table')">#i18n{taskstack.view_task_history.change.date}</th>
+                </tr>
+                <#if stack_task_history??  && stack_task_history?has_content>
+                    <#list stack_task_history as task_history>
+                        <tr>
+                            <td>${task_history.taskCode!}</td>
+                            <td>${task_history.author!}</td>
+                            <td class="text-center">${task_history.clientCode!}</td>
+                            <td class="text-center">${task_history.taskStatus!}</td>
+                            <td class="text-center">
+                                <#if task_history.taskChangeType == "CREATED">
+                                <span class="badge bg-success"> ${task_history.taskChangeType!} </span>
+                                <#elseif task_history.taskChangeType == "UPDATED">
+                                <span class="badge bg-primary"> ${task_history.taskChangeType!} </span>
+                                <#elseif task_history.taskChangeType == "DELETED">
+                                <span class="badge bg-warning"> ${task_history.taskChangeType!} </span>
+                                <#elseif task_history.taskChangeType == "REFUSED">
+                                <span class="badge bg-danger"> ${task_history.taskChangeType!} </span>
+                                <#else>
+                                ${task_history.taskChangeType!}
+                            </#if>
+                            <td>${task_history.taskChangeDate!}</td>
+                        </tr>
+                    </#list>
+                </#if>
+            </table>
+        </div>
+    </@pageColumn>
+</@rowBox>
+<script src="./js/admin/plugins/identitystore/table.js"></script>
