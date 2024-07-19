@@ -15,14 +15,14 @@
                 <div class="input-group">
                     <@table id="search-result-table">
                         <tr>
-                            <th onclick="sortTable(0, 'identity-table')">#i18n{taskstack.view_task_stack.code}</th>
-                            <th onclick="sortTable(1, 'identity-table')">#i18n{taskstack.view_task_stack.resource.id}</th>
-                            <th onclick="sortTable(2, 'identity-table')">#i18n{taskstack.view_task_stack.resource.type}</th>
-                            <th onclick="sortTable(3, 'identity-table')">#i18n{taskstack.view_task_stack.type}</th>
-                            <th onclick="sortTable(4, 'identity-table')">#i18n{taskstack.view_task_stack.date.creation}</th>
-                            <th onclick="sortTable(5, 'identity-table')">#i18n{taskstack.view_task_stack.date.last_update}</th>
-                            <th onclick="sortTable(6, 'identity-table')">#i18n{taskstack.view_task_stack.last_update_client_code}</th>
-                            <th onclick="sortTable(7, 'identity-table')">#i18n{taskstack.view_task_stack.status}</th>
+                            <th>#i18n{taskstack.view_task_stack.code}</th>
+                            <th>#i18n{taskstack.view_task_stack.resource.id}</th>
+                            <th>#i18n{taskstack.view_task_stack.resource.type}</th>
+                            <th>#i18n{taskstack.view_task_stack.type}</th>
+                            <th>#i18n{taskstack.view_task_stack.date.creation}</th>
+                            <th>#i18n{taskstack.view_task_stack.date.last_update}</th>
+                            <th>#i18n{taskstack.view_task_stack.last_update_client_code}</th>
+                            <th>#i18n{taskstack.view_task_stack.status}</th>
                         </tr>
                         <@tableHeadBodySeparator />
                         <tr>
@@ -78,15 +78,15 @@
             </form>
         <table id="task-stack-table" class="table table-condensed table-striped">
             <tr>
-                <th onclick="sortTable(0, 'identity-table')">#i18n{taskstack.view_task_stack.code}</th>
-                <th onclick="sortTable(1, 'identity-table')">#i18n{taskstack.view_task_stack.resource.id}</th>
-                <th onclick="sortTable(2, 'identity-table')">#i18n{taskstack.view_task_stack.resource.type}</th>
-                <th onclick="sortTable(3, 'identity-table')">#i18n{taskstack.view_task_stack.type}</th>
-                <th onclick="sortTable(4, 'identity-table')">#i18n{taskstack.view_task_stack.date.creation}</th>
-                <th onclick="sortTable(5, 'identity-table')">#i18n{taskstack.view_task_stack.date.last_update}</th>
-                <th onclick="sortTable(6, 'identity-table')">#i18n{taskstack.view_task_stack.last_update_client_code}</th>
-                <th onclick="sortTable(7, 'identity-table')">#i18n{taskstack.view_task_stack.status}</th>
-                <th onclick="sortTable(8, 'identity-table')">#i18n{taskstack.view_task_stack.metadata}</th>
+                <th onclick="sortTable(0, 'task-stack-table')">#i18n{taskstack.view_task_stack.code}</th>
+                <th onclick="sortTable(1, 'task-stack-table')">#i18n{taskstack.view_task_stack.resource.id}</th>
+                <th onclick="sortTable(2, 'task-stack-table')">#i18n{taskstack.view_task_stack.resource.type}</th>
+                <th onclick="sortTable(3, 'task-stack-table')">#i18n{taskstack.view_task_stack.type}</th>
+                <th onclick="sortTable(4, 'task-stack-table')">#i18n{taskstack.view_task_stack.date.creation}</th>
+                <th onclick="sortTable(5, 'task-stack-table')">#i18n{taskstack.view_task_stack.date.last_update}</th>
+                <th onclick="sortTable(6, 'task-stack-table')">#i18n{taskstack.view_task_stack.last_update_client_code}</th>
+                <th onclick="sortTable(7, 'task-stack-table')">#i18n{taskstack.view_task_stack.status}</th>
+                <th onclick="sortTable(8, 'task-stack-table')">#i18n{taskstack.view_task_stack.metadata}</th>
             </tr>
             <#if stack_task_list??  && stack_task_list?has_content>
                 <#list stack_task_list as stack_task>
