@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller( controllerJsp = "TaskSearch.jsp", controllerPath = "jsp/admin/plugins/taskstack/", right = "IDENTITYSTORE_MANAGEMENT" )
+@Controller( controllerJsp = "TaskSearch.jsp", controllerPath = "jsp/admin/plugins/taskstack/", right = "TASKSTACK_MANAGEMENT" )
 public class TaskSearchJspBean extends MVCAdminJspBean
 {
 
