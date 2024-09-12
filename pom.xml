@@ -29,7 +29,7 @@
         <repository>
             <id>luteceReleaseRepository</id>
             <name>luteceReleaseRepository</name>
-            <url>http://dev.lutece.paris.fr/nexus/content/groups/maven_repository/</url>
+            <url>https://dev.lutece.paris.fr/nexus/content/groups/maven_repository/</url>
         </repository>
     </repositories>
 
