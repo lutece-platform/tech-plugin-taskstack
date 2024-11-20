@@ -48,6 +48,7 @@ import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 import fr.paris.lutece.plugins.taskstack.exception.TaskValidationException;
 import fr.paris.lutece.plugins.taskstack.rs.request.common.RequestAuthor;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.sql.TransactionManager;
 
 import java.sql.Timestamp;
@@ -62,6 +63,9 @@ import java.util.stream.Collectors;
 
 public class TaskService
 {
+    private static final int PROPERTY_MAX_NB_TASK_RETURNED = AppPropertiesService.getPropertyInt("taskstack.search.maxNbTaskReturned", 0);
+
+
     private static TaskService _instance;
 
     public static TaskService instance( )
@@ -214,11 +218,12 @@ public class TaskService
     }
 
     public List<TaskDto> search(final String _strTaskCode, final String _strResourceId, final String _strResourceType, final String _strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
-                                final CreationDateOrdering creationDateOrdering ) throws TaskStackException
+                                final CreationDateOrdering creationDateOrdering, final int max ) throws TaskStackException
     {
+        int nMaxNbIdentityReturned = ( max > 0 ) ? max : PROPERTY_MAX_NB_TASK_RETURNED;
         try
         {
-            final List<Task> search = TaskHome.search( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering );
+            final List<Task> search = TaskHome.search( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned );
             return search.stream( ).map( DtoMapper::toTaskDto )
                     .peek( taskDto -> taskDto.getTaskChanges( ).addAll( this.getTaskHistory( taskDto.getTaskCode( ) ) ) ).collect( Collectors.toList( ) );
         }

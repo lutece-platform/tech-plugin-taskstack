@@ -60,7 +60,7 @@
                                     <option value="">#i18n{identitystore.view_change_history.no.type}</option>
                                     <option value="TODO" <#if task_status! == "TODO"> selected="selected"</#if>>TODO</option>
                                     <option value="IN_PROGRESS" <#if task_status! == "IN_PROGRESS"> selected="selected"</#if>>IN_PROGRESS</option>
-                                    <option value="PROCESSED" <#if task_status! == "PROCESSED"> selected="selected"</#if>>DEPROCESSEDLETE</option>
+                                    <option value="PROCESSED" <#if task_status! == "PROCESSED"> selected="selected"</#if>>PROCESSED</option>
                                     <option value="CANCELED" <#if task_status! == "CANCELED"> selected="selected"</#if>>CANCELED</option>
                                     <option value="REFUSED" <#if task_status! == "REFUSED"> selected="selected"</#if>>REFUSED</option>
                                 </select>
@@ -105,7 +105,7 @@
                             <span class="badge bg-success"> ${stack_task.taskStatus!} </span>
                             <#elseif stack_task.taskStatus == "CANCELED">
                             <span class="badge bg-warning"> ${stack_task.taskStatus!} </span>
-                            <#elseif stack_task.taskStatus == "DEPROCESSEDLETE">
+                            <#elseif stack_task.taskStatus == "PROCESSED">
                             <span class="badge bg-danger"> ${stack_task.taskStatus!} </span>
                             <#elseif stack_task.taskStatus == "REFUSED">
                             <span class="badge bg-danger"> ${stack_task.taskStatus!} </span>

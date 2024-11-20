@@ -102,13 +102,25 @@ public class TaskSearchJspBean extends MVCAdminJspBean
                 {
                     final List<TaskStatusType> taskStatusTypes = new ArrayList<>( );
                     taskStatusTypes.add(TaskStatusType.valueOf(taskStatus));
-                    stackTaskList.addAll(TaskService.instance().search(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, taskStatusTypes, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER)));
+                    stackTaskList.addAll(TaskService.instance().search(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, taskStatusTypes, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
                 }
                 else
                 {
-                    stackTaskList.addAll(TaskService.instance().search(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER)));
+                    stackTaskList.addAll(TaskService.instance().search(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
                 }
             } catch (TaskStackException e)
+            {
+                addError(e.getMessage());
+                return redirectView(request, VIEW_TASK_SEARCH);
+            }
+        }
+        else
+        {
+            try
+            {
+                stackTaskList.addAll(TaskService.instance().search("", "", "", "", null, null, "", null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
+            }
+            catch (TaskStackException e)
             {
                 addError(e.getMessage());
                 return redirectView(request, VIEW_TASK_SEARCH);
