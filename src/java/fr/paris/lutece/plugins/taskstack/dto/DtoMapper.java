@@ -50,6 +50,7 @@ public class DtoMapper
         task.setTaskType( taskDto.getTaskType( ) );
         task.setLastUpdateClientCode( taskDto.getLastUpdateClientCode( ) );
         task.setLastUpdateDate( taskDto.getLastUpdateDate( ) );
+        task.setExpirationDate( taskDto.getExpirationDate( ) );
         task.setResourceId( taskDto.getResourceId( ) );
         task.getMetadata( ).putAll( taskDto.getMetadata( ) );
         return task;
@@ -65,6 +66,7 @@ public class DtoMapper
         taskDto.setTaskType( task.getTaskType( ) );
         taskDto.setLastUpdateClientCode( task.getLastUpdateClientCode( ) );
         taskDto.setLastUpdateDate( task.getLastUpdateDate( ) );
+        taskDto.setExpirationDate( task.getExpirationDate( ) );
         taskDto.setResourceId( task.getResourceId( ) );
         taskDto.getMetadata( ).putAll( task.getMetadata( ) );
         return taskDto;

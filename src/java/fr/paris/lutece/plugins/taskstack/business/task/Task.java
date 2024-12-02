@@ -47,6 +47,7 @@ public class Task
     protected Timestamp _dateCreationDate;
     protected Timestamp _dateLastUpdateDate;
     protected String _strLastUpdateClientCode;
+    protected Timestamp _dateExpirationDate;
     protected TaskStatusType _enumTaskStatus;
     protected Map<String, String> _mapMetadata = new HashMap<>( );
 
@@ -128,6 +129,16 @@ public class Task
     public void setLastUpdateClientCode( String _strLastUpdateClientCode )
     {
         this._strLastUpdateClientCode = _strLastUpdateClientCode;
+    }
+
+    public Timestamp getExpirationDate()
+    {
+        return _dateExpirationDate;
+    }
+
+    public void setExpirationDate(Timestamp _dateExpirationDate)
+    {
+        this._dateExpirationDate = _dateExpirationDate;
     }
 
     public TaskStatusType getTaskStatus( )

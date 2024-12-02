@@ -45,35 +45,27 @@ import java.util.List;
 
 public class PurgeExpiredTasksDaemon extends Daemon
 {
-    private static final String RETENTION = AppPropertiesService.getProperty( "taskstack.task.retention.days.number", "" );
 
     @Override
     public void run( )
     {
-        if ( StringUtils.isNotBlank( RETENTION ) )
+        try
         {
-            try
+            final List<Task> expiredTasks = TaskHome.getExpiredTasks( );
+            for ( final Task task : expiredTasks )
             {
-                final List<Task> expiredTasks = TaskHome.getExpiredTasks( RETENTION );
-                for ( final Task task : expiredTasks )
-                {
-                    AppLogService.info( "Removing expired task " + task.getTaskCode( ) + " for resource ID " + task.getResourceId( ) + " and status "
-                            + task.getTaskStatus( ).name( ) );
-                    TaskService.instance( ).deleteTask( task );
-                }
-                if ( expiredTasks.isEmpty( ) )
-                {
-                    AppLogService.info( "No expired task found. " );
-                }
+                AppLogService.info( "Removing expired task " + task.getTaskCode( ) + " for resource ID " + task.getResourceId( ) + " and status "
+                        + task.getTaskStatus( ).name( ) );
+                TaskService.instance( ).deleteTask( task );
             }
-            catch( final Exception e )
+            if ( expiredTasks.isEmpty( ) )
             {
-                AppLogService.error( "Could not purge expired tasks due to: ", e );
+                AppLogService.info( "No expired task found. " );
             }
         }
-        else
+        catch( final Exception e )
         {
-            AppLogService.error( "TaskPurgeDaemon: Task retention days not set. Please use taskstack.task.retention.days.number property." );
+            AppLogService.error( "Could not purge expired tasks due to: ", e );
         }
     }
 }

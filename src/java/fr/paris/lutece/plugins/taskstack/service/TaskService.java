@@ -64,6 +64,7 @@ import java.util.stream.Collectors;
 public class TaskService
 {
     private static final int PROPERTY_MAX_NB_TASK_RETURNED = AppPropertiesService.getPropertyInt("taskstack.search.maxNbTaskReturned", 0);
+    private static final int RETENTION = AppPropertiesService.getPropertyInt( "taskstack.task.retention.days.number", 0 );
 
 
     private static TaskService _instance;
@@ -94,6 +95,10 @@ public class TaskService
             taskDto.setTaskCode( UUID.randomUUID( ).toString( ) );
             taskDto.setLastUpdateClientCode( clientCode );
             taskDto.setTaskStatus( TaskStatusType.TODO );
+            if(taskDto.getExpirationDate() == null)
+            {
+                taskDto.setExpirationDate(Timestamp.valueOf(taskDto.getCreationDate().toLocalDateTime().plusDays(RETENTION)));
+            }
 
             if ( taskManagement != null )
             {

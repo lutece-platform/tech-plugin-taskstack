@@ -74,11 +74,11 @@ public class TaskHome
         }
     }
 
-    public static List<Task> getExpiredTasks( final String retention ) throws TaskStackException
+    public static List<Task> getExpiredTasks( ) throws TaskStackException
     {
         try
         {
-            return _taskDao.selectExpiredTask( retention, _plugin );
+            return _taskDao.selectExpiredTask( _plugin );
         }
         catch( JsonProcessingException e )
         {

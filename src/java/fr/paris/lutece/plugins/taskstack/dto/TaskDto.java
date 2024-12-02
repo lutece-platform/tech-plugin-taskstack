@@ -89,6 +89,12 @@ public class TaskDto
     protected String lastUpdateClientCode;
 
     /**
+     * Date of the expiration of the task
+     */
+    @JsonProperty( "expiration_date" )
+    protected Timestamp expirationDate;
+
+    /**
      * Status of the task
      */
     @JsonProperty( "task_status" )
@@ -171,6 +177,16 @@ public class TaskDto
     public void setLastUpdateClientCode( String lastUpdateClientCode )
     {
         this.lastUpdateClientCode = lastUpdateClientCode;
+    }
+
+    public Timestamp getExpirationDate()
+    {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(Timestamp expirationDate)
+    {
+        this.expirationDate = expirationDate;
     }
 
     public TaskStatusType getTaskStatus( )
