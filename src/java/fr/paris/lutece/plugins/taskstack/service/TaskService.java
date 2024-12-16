@@ -222,6 +222,24 @@ public class TaskService
         return taskDtos;
     }
 
+    public List<TaskDto> getTasksBySecondCuid( final String strSecondCuid ) throws TaskStackException
+    {
+        final List<Task> tasks = TaskHome.getBySecondCuid( strSecondCuid );
+
+        final List<TaskDto> taskDtos = new ArrayList<>( );
+        if ( tasks != null && !tasks.isEmpty( ) )
+        {
+            for ( final Task task : tasks )
+            {
+                final TaskDto taskDto = DtoMapper.toTaskDto( task );
+                taskDto.getTaskChanges( ).addAll( this.getTaskHistory( task.getTaskCode( ) ) );
+                taskDtos.add( taskDto );
+            }
+        }
+
+        return taskDtos;
+    }
+
     public List<TaskDto> search(final String _strTaskCode, final String _strResourceId, final String _strResourceType, final String _strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
                                 final CreationDateOrdering creationDateOrdering, final int max ) throws TaskStackException
     {

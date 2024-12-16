@@ -61,4 +61,6 @@ public interface ITaskDAO
                       final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Plugin plugin ) throws JsonProcessingException;
 
     List<Task> selectByIdAndResourceType( final String strResourceId, final String strResourceType, final Plugin plugin ) throws JsonProcessingException;
+
+    List<Task> selectBySecondCuid( final String strSecondCuid, final Plugin plugin ) throws JsonProcessingException;
 }

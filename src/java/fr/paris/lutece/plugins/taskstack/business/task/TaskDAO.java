@@ -63,6 +63,7 @@ public class TaskDAO implements ITaskDAO
     private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";
     private static final String SQL_QUERY_SELECT_BY_ID_AND_RESOURCE_TYPE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE resource_id = ? AND resource_type = ?";
     private static final String SQL_QUERY_SELECT_BY_VALIDITY = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE stack_task.expiration_date < now();";
+    private static final String SQL_QUERY_SELECT_BY_SECOND_CUID = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE (type = 'ACCOUNT_IDENTITY_MERGE_REQUEST' OR type = 'ACCOUNT_MERGE_REQUEST' ) AND metadata::text LIKE ?";
     private static final String SQL_QUERY_SEARCH = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE ${task_code_criteria} AND ${task_resource_id_criteria} AND ${task_resource_type_criteria} AND ${task_type_criteria} AND ${task_creation_date_criteria} AND ${task_last_update_criteria} AND ${task_last_update_client_code_criteria} AND ${task_status_criteria} AND ${nb_days_creation_criteria} ${order_criteria} LIMIT ${limit}";
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task ( code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, expiration_date, status, metadata ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, to_json(?::json) ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task WHERE id = ? ";
@@ -322,6 +323,22 @@ public class TaskDAO implements ITaskDAO
         {
             daoUtil.setString( 1, strResourceId );
             daoUtil.setString( 2, strResourceType );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                tasks.add( this.getTask( daoUtil ) );
+            }
+        }
+        return tasks;
+    }
+
+    @Override
+    public List<Task> selectBySecondCuid( final String strSecondCuid, final Plugin plugin ) throws JsonProcessingException
+    {
+        final List<Task> tasks = new ArrayList<>( );
+        try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_SECOND_CUID, plugin ) )
+        {
+            daoUtil.setString( 1, '%'+strSecondCuid+'%' );
             daoUtil.executeQuery( );
             while ( daoUtil.next( ) )
             {

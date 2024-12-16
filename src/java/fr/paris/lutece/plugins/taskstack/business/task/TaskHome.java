@@ -151,4 +151,18 @@ public class TaskHome
             throw new TaskStackException( "An error occurred trying to get Tasks by resource id and type: ", e );
         }
     }
+
+    public static List<Task> getBySecondCuid( final String strSecondCuid ) throws TaskStackException
+    {
+        try
+        {
+            return _taskDao.selectBySecondCuid( strSecondCuid, _plugin );
+        }
+        catch( JsonProcessingException e )
+        {
+            throw new TaskStackException( "An error occurred trying to get Tasks by resource id and type: ", e );
+        }
+    }
+
+
 }
