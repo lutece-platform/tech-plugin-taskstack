@@ -25,6 +25,11 @@ import java.util.Map;
 public class TaskSearchJspBean extends MVCAdminJspBean
 {
 
+    //Messages
+    protected static final String MESSAGE_DATE_ERROR = "#i18n{taskstack.message.date.error}";
+    protected static final String MESSAGE_TASK_RECUPERATION_ERROR = "#i18n{taskstack.message.task.recuperation.error}";
+    protected static final String MESSAGE_TASK_CHANGE_RECUPERATION_ERROR = "#i18n{taskstack.message.task.change.recuperation.error}";
+
     //Templates
     private static final String TEMPLATE_TASK_SEARCH = "/admin/plugins/taskstack/task_search.html";
     private static final String TEMPLATE_TASK_HISTORY = "/admin/plugins/taskstack/task_history.html";
@@ -93,7 +98,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
                 lastUpdateDate = StringUtils.isNotBlank(strLastUpdateDate) ? this.convertDate(strLastUpdateDate) : null;
             } catch (ParseException e)
             {
-                addError(e.getMessage());
+                addError( MESSAGE_DATE_ERROR + e.getMessage());
                 return redirectView(request, VIEW_TASK_SEARCH);
             }
             try
@@ -110,7 +115,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
                 }
             } catch (TaskStackException e)
             {
-                addError(e.getMessage());
+                addError( MESSAGE_TASK_RECUPERATION_ERROR + e.getMessage());
                 return redirectView(request, VIEW_TASK_SEARCH);
             }
         }
@@ -122,12 +127,12 @@ public class TaskSearchJspBean extends MVCAdminJspBean
             }
             catch (TaskStackException e)
             {
-                addError(e.getMessage());
+                addError( MESSAGE_TASK_RECUPERATION_ERROR + e.getMessage());
                 return redirectView(request, VIEW_TASK_SEARCH);
             }
         }
 
-        Map<String, Object> model = new HashMap<>();
+        Map<String, Object> model = getModel();
         model.put( "task_code", taskCode );
         model.put( "resource_id", resourceId );
         model.put( "resource_type", resourceType );
@@ -155,11 +160,11 @@ public class TaskSearchJspBean extends MVCAdminJspBean
                 stackTaskHistoryList.addAll(task.getTaskChanges( ) );
             } catch ( TaskStackException e )
             {
-                addError( e.getMessage( ) );
+                addError( MESSAGE_TASK_CHANGE_RECUPERATION_ERROR + e.getMessage( ) );
                 return redirectView( request, VIEW_TASK_SEARCH );
             }
         }
-        Map<String, Object> model = new HashMap<>( );
+        Map<String, Object> model = getModel();
         model.put( "stack_task_history", stackTaskHistoryList );
 
         return getPage( PROPERTY_PAGE_TITLE_TASK_HISTORY, TEMPLATE_TASK_HISTORY, model );
