@@ -1,6 +1,11 @@
 <@pageContainer>
     <@rowBox>
         <@boxHeader i18nTitleKey="taskstack.title">
+            <@headerButtons>
+                <form class="form-inline pull-right" method="post" name="task_export" action="jsp/admin/plugins/taskstack/TaskSearch.jsp">
+                    <@button type='submit' name='action_exportTaskStack' buttonIcon='plus' title='#i18n{taskstack.view_task_stack.buttonExport}' />
+                </form>
+            </@headerButtons>
         </@boxHeader>
         <@boxBody>
             <@messages infos=infos />

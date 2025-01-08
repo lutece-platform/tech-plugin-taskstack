@@ -1,17 +1,22 @@
 package fr.paris.lutece.plugins.taskstack.web;
 
 import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
+import fr.paris.lutece.plugins.taskstack.csv.Batch;
+import fr.paris.lutece.plugins.taskstack.csv.CsvTaskService;
 import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
 import fr.paris.lutece.plugins.taskstack.dto.TaskChangeDto;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 import fr.paris.lutece.plugins.taskstack.service.TaskService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +25,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Controller( controllerJsp = "TaskSearch.jsp", controllerPath = "jsp/admin/plugins/taskstack/", right = "TASKSTACK_MANAGEMENT" )
 public class TaskSearchJspBean extends MVCAdminJspBean
@@ -47,6 +54,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
     private static final String VIEW_TASK_HISTORY = "viewTaskHistory";
 
     //Actions
+    private static final String ACTION_EXPORT_TASK_STACK = "exportTaskStack";
 
     //Infos
     private static final String QUERY_PARAM_TASK_CODE = "task_code";
@@ -58,9 +66,11 @@ public class TaskSearchJspBean extends MVCAdminJspBean
     private static final String QUERY_PARAM_AUTHOR_LAST_UPDATE_CLIENT_CODE = "last_update_client_code";
     private static final String QUERY_PARAM_TASK_STATUS = "task_status";
     private static final String CREATION_DATE_ORDER = "ASC";
+    private static final int BATCH_PARTITION_SIZE = AppPropertiesService.getPropertyInt( "identitystore.export.batch.size", 100 );
 
     // Session variable to store working values
     private List<String> _listQuery = new ArrayList<>( );
+    private List<TaskDto> _stackTaskList = new ArrayList<>();
 
     @View( value = VIEW_TASK_SEARCH, defaultView = true )
     public String getViewIndicators( HttpServletRequest request )
@@ -83,7 +93,6 @@ public class TaskSearchJspBean extends MVCAdminJspBean
                 queryParameters.get( QUERY_PARAM_AUTHOR_LAST_UPDATE_CLIENT_CODE ) : "";
         final String taskStatus = queryParameters.get( QUERY_PARAM_TASK_STATUS ) != null ?
                 StringUtils.replace(queryParameters.get( QUERY_PARAM_TASK_STATUS ).toUpperCase(), " ", "_") : "";
-        List<TaskDto> stackTaskList= new ArrayList<>();
 
         if(StringUtils.isNotBlank(taskCode) || StringUtils.isNotBlank(resourceId) ||
                 StringUtils.isNotBlank(resourceType) || StringUtils.isNotBlank(taskType) ||
@@ -107,11 +116,11 @@ public class TaskSearchJspBean extends MVCAdminJspBean
                 {
                     final List<TaskStatusType> taskStatusTypes = new ArrayList<>( );
                     taskStatusTypes.add(TaskStatusType.valueOf(taskStatus));
-                    stackTaskList.addAll(TaskService.instance().search(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, taskStatusTypes, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
+                    _stackTaskList.addAll(TaskService.instance().search(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, taskStatusTypes, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
                 }
                 else
                 {
-                    stackTaskList.addAll(TaskService.instance().search(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
+                    _stackTaskList.addAll(TaskService.instance().search(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
                 }
             } catch (TaskStackException e)
             {
@@ -123,7 +132,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
         {
             try
             {
-                stackTaskList.addAll(TaskService.instance().search("", "", "", "", null, null, "", null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
+                _stackTaskList.addAll(TaskService.instance().search("", "", "", "", null, null, "", null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
             }
             catch (TaskStackException e)
             {
@@ -141,7 +150,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
         model.put( "last_update_date", strLastUpdateDate );
         model.put( "Last_update_client_code", lastUpdateClientCode );
         model.put( "task_status", taskStatus );
-        model.put( "stack_task_list", stackTaskList);
+        model.put( "stack_task_list", _stackTaskList);
 
         return getPage(PROPERTY_PAGE_TITLE_TASK_SEARCH, TEMPLATE_TASK_SEARCH, model );
     }
@@ -168,6 +177,37 @@ public class TaskSearchJspBean extends MVCAdminJspBean
         model.put( "stack_task_history", stackTaskHistoryList );
 
         return getPage( PROPERTY_PAGE_TITLE_TASK_HISTORY, TEMPLATE_TASK_HISTORY, model );
+    }
+
+    @Action( ACTION_EXPORT_TASK_STACK )
+    public void doExportIdentities( HttpServletRequest request )
+    {
+        try
+        {
+
+            final Batch<TaskDto> batches = Batch.ofSize( _stackTaskList, BATCH_PARTITION_SIZE );
+
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+            final ZipOutputStream zipOut = new ZipOutputStream( outputStream );
+
+            int i = 0;
+            for ( final List<TaskDto> batch : batches )
+            {
+                final byte [ ] bytes = CsvTaskService.instance( ).writeTask( batch );
+                final ZipEntry zipEntry = new ZipEntry( "taskStack-" + ++i + ".csv" );
+                zipEntry.setSize( bytes.length );
+                zipOut.putNextEntry( zipEntry );
+                zipOut.write( bytes );
+            }
+            zipOut.closeEntry( );
+            zipOut.close( );
+            this.download( outputStream.toByteArray( ), "taskStack.zip", "application/zip" );
+        }
+        catch( Exception e )
+        {
+            addError( e.getMessage( ) );
+            redirectView( request, VIEW_TASK_SEARCH );
+        }
     }
 
     private Map<String, String> getQueryParameters( HttpServletRequest request )

@@ -60,6 +60,17 @@ public class Constants
     public static final String KEY_MESSAGE_KEY = "message_key";
     public static final String KEY_HTTP_CODE = "http_code";
 
+    public static final String PARAMETER_CODE = "code";
+    public static final String PARAMETER_ID_RESOURCE = "idResource";
+    public static final String PARAMETER_TYPE_RESOURCE = "typeResource";
+    public static final String PARAMETER_TYPE = "type";
+    public static final String PARAMETER_CREATION_DATE = "creationDate";
+    public static final String PARAMETER_LAST_UPDATE_DATE = "lastUpdateDate";
+    public static final String PARAMETER_LAST_UPDATE_CLIENT_CODE = "lastUpdateClientCode";
+    public static final String PARAMETER_STATUS = "status";
+    public static final String PARAMETER_METADATA = "metadata";
+    public static final char CSV_SEPARATOR = ';';
+
     public static final String PROPERTY_REST_INFO_SUCCESSFUL_OPERATION = "taskstack.rest.info.successful.operation";
     public static final String PROPERTY_REST_ERROR_DURING_TREATMENT = "taskstack.rest.error.during.treatment";
     public static final String PROPERTY_REST_ERROR_NO_TASK_FOUND = "taskstack.rest.error.no.task.found";
