@@ -4,6 +4,7 @@ import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
 import fr.paris.lutece.plugins.taskstack.csv.Batch;
 import fr.paris.lutece.plugins.taskstack.csv.CsvTaskService;
 import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
+import fr.paris.lutece.plugins.taskstack.dto.IdentityTaskType;
 import fr.paris.lutece.plugins.taskstack.dto.TaskChangeDto;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
@@ -13,6 +14,9 @@ import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.web.util.LocalizedPaginator;
+import fr.paris.lutece.util.html.AbstractPaginator;
+import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,10 +25,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -46,8 +54,14 @@ public class TaskSearchJspBean extends MVCAdminJspBean
     //Properties
     private static final String PROPERTY_PAGE_TITLE_TASK_SEARCH = "";
     private static final String PROPERTY_PAGE_TITLE_TASK_HISTORY = "";
+    private static final String PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE = "taskstack.listItems.itemsPerPage";
 
     //Markers
+    private static final String JSP_TASK_STACK = "jsp/admin/plugins/taskstack/TaskSearch.jsp";
+    private static final String MARK_STACK_TASK_LIST = "stack_task_list";
+    private static final String MARK_PAGINATOR = "paginator";
+    private static final String MARK_NB_ITEMS_PER_PAGE = "nb_items_per_page";
+    private static final String MARK_TASK_TYPE_LIST = "task_type_list";
 
     //Views
     private static final String VIEW_TASK_SEARCH = "viewTaskSearch";
@@ -65,8 +79,12 @@ public class TaskSearchJspBean extends MVCAdminJspBean
     private static final String QUERY_PARAM_AUTHOR_LAST_UPDATE_DATE = "last_update_date";
     private static final String QUERY_PARAM_AUTHOR_LAST_UPDATE_CLIENT_CODE = "last_update_client_code";
     private static final String QUERY_PARAM_TASK_STATUS = "task_status";
-    private static final String CREATION_DATE_ORDER = "ASC";
+    private static final String CREATION_DATE_ORDER = "DESC";
     private static final int BATCH_PARTITION_SIZE = AppPropertiesService.getPropertyInt( "identitystore.export.batch.size", 100 );
+
+    //Variables
+    private String _strCurrentPageIndex;
+    private int _nItemsPerPage;
 
     // Session variable to store working values
     private List<String> _listQuery = new ArrayList<>( );
@@ -94,6 +112,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
         final String taskStatus = queryParameters.get( QUERY_PARAM_TASK_STATUS ) != null ?
                 StringUtils.replace(queryParameters.get( QUERY_PARAM_TASK_STATUS ).toUpperCase(), " ", "_") : "";
 
+        List<Integer> listTaskIds = new ArrayList<>( );
         if(StringUtils.isNotBlank(taskCode) || StringUtils.isNotBlank(resourceId) ||
                 StringUtils.isNotBlank(resourceType) || StringUtils.isNotBlank(taskType) ||
                 StringUtils.isNotBlank(strCreationDate) || StringUtils.isNotBlank(strLastUpdateDate) ||
@@ -116,11 +135,11 @@ public class TaskSearchJspBean extends MVCAdminJspBean
                 {
                     final List<TaskStatusType> taskStatusTypes = new ArrayList<>( );
                     taskStatusTypes.add(TaskStatusType.valueOf(taskStatus));
-                    _stackTaskList.addAll(TaskService.instance().search(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, taskStatusTypes, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
+                    listTaskIds.addAll(TaskService.instance().searchId(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, taskStatusTypes, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
                 }
                 else
                 {
-                    _stackTaskList.addAll(TaskService.instance().search(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
+                    listTaskIds.addAll(TaskService.instance().searchId(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
                 }
             } catch (TaskStackException e)
             {
@@ -132,7 +151,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
         {
             try
             {
-                _stackTaskList.addAll(TaskService.instance().search("", "", "", "", null, null, "", null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
+                listTaskIds.addAll(TaskService.instance().searchId("", "", "", "", null, null, "", null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
             }
             catch (TaskStackException e)
             {
@@ -140,19 +159,27 @@ public class TaskSearchJspBean extends MVCAdminJspBean
                 return redirectView(request, VIEW_TASK_SEARCH);
             }
         }
+        List<String> taskTypeList =  Arrays.stream(IdentityTaskType.class.getEnumConstants()).map(Enum::name).collect(Collectors.toList());
+        try
+        {
+            Map<String, Object> model = getPaginatedListModel(request, listTaskIds);
+            model.put( QUERY_PARAM_TASK_CODE, taskCode );
+            model.put( QUERY_PARAM_RESOURCE_ID, resourceId );
+            model.put( QUERY_PARAM_RESOURCE_TYPE, resourceType );
+            model.put( QUERY_PARAM_TASK_TYPE, taskType );
+            model.put( QUERY_PARAM_CREATION_DATE, strCreationDate );
+            model.put( QUERY_PARAM_AUTHOR_LAST_UPDATE_DATE, strLastUpdateDate );
+            model.put( QUERY_PARAM_AUTHOR_LAST_UPDATE_CLIENT_CODE, lastUpdateClientCode );
+            model.put( QUERY_PARAM_TASK_STATUS, taskStatus );
+            model.put( MARK_TASK_TYPE_LIST, taskTypeList);
 
-        Map<String, Object> model = getModel();
-        model.put( "task_code", taskCode );
-        model.put( "resource_id", resourceId );
-        model.put( "resource_type", resourceType );
-        model.put( "task_type", taskType );
-        model.put( "creation_date", strCreationDate );
-        model.put( "last_update_date", strLastUpdateDate );
-        model.put( "Last_update_client_code", lastUpdateClientCode );
-        model.put( "task_status", taskStatus );
-        model.put( "stack_task_list", _stackTaskList);
-
-        return getPage(PROPERTY_PAGE_TITLE_TASK_SEARCH, TEMPLATE_TASK_SEARCH, model );
+            return getPage(PROPERTY_PAGE_TITLE_TASK_SEARCH, TEMPLATE_TASK_SEARCH, model );
+        }
+                catch (TaskStackException e)
+        {
+            addError( MESSAGE_TASK_RECUPERATION_ERROR + e.getMessage());
+            return redirectView(request, VIEW_TASK_SEARCH);
+        }
     }
 
     @View( value = VIEW_TASK_HISTORY )
@@ -247,5 +274,35 @@ public class TaskSearchJspBean extends MVCAdminJspBean
             return new SimpleDateFormat("dd/MM/yyyy").parse(dateFormated);
         }
         return null;
+    }
+
+    private Map<String, Object> getPaginatedListModel( HttpServletRequest request, List<Integer> list ) throws TaskStackException
+    {
+
+        int nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
+        _strCurrentPageIndex = AbstractPaginator.getPageIndex( request, AbstractPaginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, nDefaultItemsPerPage );
+
+        UrlItem url = new UrlItem( JSP_TASK_STACK );
+        String strUrl = url.getUrl(  );
+
+        // PAGINATOR
+        LocalizedPaginator<Integer> paginator = new LocalizedPaginator<>( list, _nItemsPerPage, strUrl, AbstractPaginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
+        _stackTaskList = getTasksListByIds( paginator.getPageItems());
+
+        Map<String, Object> model = getModel(  );
+
+        model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
+        model.put( MARK_PAGINATOR, paginator );
+        model.put( MARK_STACK_TASK_LIST, _stackTaskList);
+        return model;
+    }
+
+    private List<TaskDto> getTasksListByIds( List<Integer> listId) throws TaskStackException
+    {
+        List<TaskDto> taskDtoList = TaskService.instance( ).getTasksListByIds(listId);
+        taskDtoList.sort(Comparator.comparing(TaskDto::getCreationDate));
+        Collections.reverse(taskDtoList);
+        return taskDtoList;
     }
 }

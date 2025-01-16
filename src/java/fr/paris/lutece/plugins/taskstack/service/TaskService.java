@@ -256,6 +256,27 @@ public class TaskService
         }
     }
 
+    public List<Integer> searchId(final String _strTaskCode, final String _strResourceId, final String _strResourceType, final String _strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
+                                final CreationDateOrdering creationDateOrdering, final int max ) throws TaskStackException
+    {
+        int nMaxNbIdentityReturned = ( max > 0 ) ? max : PROPERTY_MAX_NB_TASK_RETURNED;
+        try
+        {
+            return TaskHome.searchId( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned );
+        }
+        catch( final Exception e )
+        {
+            throw new TaskStackException( "An error occurred during task search", e );
+        }
+    }
+
+    public List<TaskDto> getTasksListByIds(List<Integer> listId) throws TaskStackException
+    {
+        final List<Task> search = TaskHome.getTasksListByIds(listId);
+        return search.stream( ).map( DtoMapper::toTaskDto )
+                .peek( taskDto -> taskDto.getTaskChanges( ).addAll( this.getTaskHistory( taskDto.getTaskCode( ) ) ) ).collect( Collectors.toList( ) );
+    }
+
     public void deleteTask( final Task task ) throws TaskStackException
     {
         if ( task == null || task.getId( ) == null )

@@ -62,9 +62,11 @@ public class TaskDAO implements ITaskDAO
     private static final String SQL_QUERY_SELECT = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id = ?";
     private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";
     private static final String SQL_QUERY_SELECT_BY_ID_AND_RESOURCE_TYPE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE resource_id = ? AND resource_type = ?";
+    private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id IN (";
     private static final String SQL_QUERY_SELECT_BY_VALIDITY = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE stack_task.expiration_date < now();";
     private static final String SQL_QUERY_SELECT_BY_SECOND_CUID = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE (type = 'ACCOUNT_IDENTITY_MERGE_REQUEST' OR type = 'ACCOUNT_MERGE_REQUEST' ) AND metadata::text LIKE ?";
     private static final String SQL_QUERY_SEARCH = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE ${task_code_criteria} AND ${task_resource_id_criteria} AND ${task_resource_type_criteria} AND ${task_type_criteria} AND ${task_creation_date_criteria} AND ${task_last_update_criteria} AND ${task_last_update_client_code_criteria} AND ${task_status_criteria} AND ${nb_days_creation_criteria} ${order_criteria} LIMIT ${limit}";
+    private static final String SQL_QUERY_SEARCH_ID = "SELECT id FROM stack_task WHERE ${task_code_criteria} AND ${task_resource_id_criteria} AND ${task_resource_type_criteria} AND ${task_type_criteria} AND ${task_creation_date_criteria} AND ${task_last_update_criteria} AND ${task_last_update_client_code_criteria} AND ${task_status_criteria} AND ${nb_days_creation_criteria} ${order_criteria} LIMIT ${limit}";
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task ( code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, expiration_date, status, metadata ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, to_json(?::json) ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task WHERE id = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE stack_task SET code = ?, resource_id = ?, resource_type = ?, type = ?, creation_date = ?, last_update_date = ?, last_update_client_code = ?, status = ?, metadata = to_json(?::json) WHERE code = ?";
@@ -208,6 +210,51 @@ public class TaskDAO implements ITaskDAO
     {
 
         String sqlQuerySearch = SQL_QUERY_SEARCH;
+        sqlQuerySearch = sqlSearchParameters(strTaskCode, strResourceId, strResourceType, strTaskType, creationDate,
+                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, sqlQuerySearch);
+
+        sqlQuerySearch = sqlQuerySearch.replace( "${limit}", String.valueOf( nMaxNbIdentityReturned ) );
+
+        try ( final DAOUtil daoUtil = new DAOUtil( sqlQuerySearch, plugin ) )
+        {
+            final List<Task> tasks = new ArrayList<>( );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                tasks.add( this.getTask( daoUtil ) );
+            }
+            return tasks;
+        }
+    }
+
+    @Override
+    public List<Integer> searchId(final String strTaskCode, final String strResourceId, final String strResourceType, String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, List<TaskStatusType> enumTaskStatus, Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned,
+                             Plugin plugin ) throws JsonProcessingException
+    {
+
+        String sqlQuerySearch = SQL_QUERY_SEARCH_ID;
+        sqlQuerySearch = sqlSearchParameters(strTaskCode, strResourceId, strResourceType, strTaskType, creationDate,
+                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, sqlQuerySearch);
+
+        sqlQuerySearch = sqlQuerySearch.replace( "${limit}", String.valueOf( nMaxNbIdentityReturned ) );
+
+        try ( final DAOUtil daoUtil = new DAOUtil( sqlQuerySearch, plugin ) )
+        {
+            final List<Integer> tasks = new ArrayList<>( );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                tasks.add( daoUtil.getInt(1));
+            }
+            return tasks;
+        }
+    }
+
+    public String sqlSearchParameters( final String strTaskCode, final String strResourceId, final String strResourceType,
+                                      String strTaskType, final Date creationDate, final Date lastUpdatedate,
+                                      final String strLastUpdateClientCode, List<TaskStatusType> enumTaskStatus,
+                                      Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering, String sqlQuerySearch )
+    {
         if ( StringUtils.isNotBlank( strTaskCode ) )
         {
             sqlQuerySearch = sqlQuerySearch.replace( "${task_code_criteria}", "code='" + strTaskCode + "'" );
@@ -300,19 +347,7 @@ public class TaskDAO implements ITaskDAO
         {
             sqlQuerySearch = sqlQuerySearch.replace( "${order_criteria}", "" );
         }
-
-        sqlQuerySearch = sqlQuerySearch.replace( "${limit}", String.valueOf( nMaxNbIdentityReturned ) );
-
-        try ( final DAOUtil daoUtil = new DAOUtil( sqlQuerySearch, plugin ) )
-        {
-            final List<Task> tasks = new ArrayList<>( );
-            daoUtil.executeQuery( );
-            while ( daoUtil.next( ) )
-            {
-                tasks.add( this.getTask( daoUtil ) );
-            }
-            return tasks;
-        }
+        return sqlQuerySearch;
     }
 
     @Override
@@ -344,6 +379,36 @@ public class TaskDAO implements ITaskDAO
             {
                 tasks.add( this.getTask( daoUtil ) );
             }
+        }
+        return tasks;
+    }
+
+    @Override
+    public List<Task> selectTasksListByIds( final List<Integer> listIds, final Plugin plugin) throws JsonProcessingException
+    {
+        final List<Task> tasks = new ArrayList<>( );
+        if ( !listIds.isEmpty( ) )
+        {
+            StringBuilder builder = new StringBuilder( );
+            for( int i = 0 ; i < listIds.size(); i++ ) {
+                builder.append( "?," );
+            }
+
+            String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
+            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
+            try ( final DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+            {
+                int index = 1;
+                for( Integer n : listIds ) {
+                    daoUtil.setInt(  index++, n );
+                }
+                daoUtil.executeQuery( );
+                while ( daoUtil.next( ) )
+                {
+                    tasks.add( this.getTask( daoUtil ) );
+                }
+            }
+
         }
         return tasks;
     }

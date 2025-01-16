@@ -44,8 +44,12 @@
                                        placeholder="#i18n{taskstack.view_task_stack.resource.type}" value="${resource_type!''}" />
                             </td>
                             <td>
-                                <input class="form-control search-field" type="text" name="task_type"
-                                       placeholder="#i18n{taskstack.view_task_stack.type}" value="${task_type!''}" />
+                                <select class="form-select" id="task_type" name="task_type" value="${task_type!''}">
+                                    <option value="" >TOUS</option>
+                                    <#list task_type_list as search_task_type >
+                                        <option value="${search_task_type}" <#if search_task_type == (task_type!'')>selected</#if> >${search_task_type}</option>
+                                    </#list>
+                                </select>
                             </td>
                             <td>
                                 <input class="form-control search-field" type="date" name="creation_date"
@@ -81,6 +85,8 @@
                     </@table>
                 </div>
             </form>
+
+        <@paginationAdmin paginator=paginator combo=1 />
         <table id="task-stack-table" class="table table-condensed table-striped">
             <tr>
                 <th onclick="sortTable(0, 'task-stack-table')">#i18n{taskstack.view_task_stack.code}</th>
@@ -130,6 +136,7 @@
                 </#list>
             </#if>
         </table>
+        <@paginationAdmin paginator=paginator />
         </@boxBody>
     </@rowBox>
 

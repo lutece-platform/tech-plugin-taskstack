@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.taskstack.business.task;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
+import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 import fr.paris.lutece.plugins.taskstack.service.TaskStackPlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -140,6 +141,12 @@ public class TaskHome
         return _taskDao.search( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, _plugin );
     }
 
+    public static List<Integer> searchId(final String strTaskCode, final String strResourceId, final String strResourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
+                                    final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned ) throws JsonProcessingException
+    {
+        return _taskDao.searchId( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, _plugin );
+    }
+
     public static List<Task> get( final String strResourceId, final String strResourceType ) throws TaskStackException
     {
         try
@@ -157,6 +164,19 @@ public class TaskHome
         try
         {
             return _taskDao.selectBySecondCuid( strSecondCuid, _plugin );
+        }
+        catch( JsonProcessingException e )
+        {
+            throw new TaskStackException( "An error occurred trying to get Tasks by resource id and type: ", e );
+        }
+    }
+
+    public static List<Task> getTasksListByIds(List<Integer> listId) throws TaskStackException
+    {
+
+        try
+        {
+            return _taskDao.selectTasksListByIds( listId, _plugin );
         }
         catch( JsonProcessingException e )
         {
