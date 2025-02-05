@@ -103,7 +103,16 @@
                 <#list stack_task_list as stack_task>
                     <tr>
                         <td>${stack_task.taskCode!}</td>
-                        <td>${stack_task.resourceId!}</td>
+                        <td>
+                            <#if cuid_link?has_content>
+                                <a href="${cuid_link}${stack_task.resourceId!}"
+                                   title="#i18n{identitystore.manage_identities.buttonView}">
+                                    ${stack_task.resourceId!}
+                                </a>
+                            <#else>
+                                ${stack_task.resourceId!}
+                            </#if>
+                        </td>
                         <td>${stack_task.resourceType!}</td>
                         <td>${stack_task.taskType!}</td>
                         <td>${stack_task.creationDate!}</td>

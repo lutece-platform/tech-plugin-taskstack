@@ -79,8 +79,10 @@ public class TaskSearchJspBean extends MVCAdminJspBean
     private static final String QUERY_PARAM_AUTHOR_LAST_UPDATE_DATE = "last_update_date";
     private static final String QUERY_PARAM_AUTHOR_LAST_UPDATE_CLIENT_CODE = "last_update_client_code";
     private static final String QUERY_PARAM_TASK_STATUS = "task_status";
+    private static final String QUERY_PARAM_CUID_LINK = "cuid_link";
     private static final String CREATION_DATE_ORDER = "DESC";
     private static final int BATCH_PARTITION_SIZE = AppPropertiesService.getPropertyInt( "identitystore.export.batch.size", 100 );
+    private static final String CUID_SEARCH_LINK = AppPropertiesService.getProperty("taskstack.search.cuid.link", "");
 
     //Variables
     private String _strCurrentPageIndex;
@@ -171,6 +173,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
             model.put( QUERY_PARAM_AUTHOR_LAST_UPDATE_DATE, strLastUpdateDate );
             model.put( QUERY_PARAM_AUTHOR_LAST_UPDATE_CLIENT_CODE, lastUpdateClientCode );
             model.put( QUERY_PARAM_TASK_STATUS, taskStatus );
+            model.put( QUERY_PARAM_CUID_LINK, CUID_SEARCH_LINK );
             model.put( MARK_TASK_TYPE_LIST, taskTypeList);
 
             return getPage(PROPERTY_PAGE_TITLE_TASK_SEARCH, TEMPLATE_TASK_SEARCH, model );
