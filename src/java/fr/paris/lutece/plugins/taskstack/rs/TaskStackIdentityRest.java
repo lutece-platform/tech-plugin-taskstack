@@ -46,7 +46,6 @@ import fr.paris.lutece.plugins.taskstack.rs.dto.UpdateTaskStatusRequest;
 import fr.paris.lutece.plugins.taskstack.rs.dto.UpdateTaskStatusResponse;
 import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackCreateTaskRequest;
 import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackGetTaskByResourceRequest;
-import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackGetTaskBySecondCuidRequest;
 import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackGetTaskRequest;
 import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackGetTaskStatusRequest;
 import fr.paris.lutece.plugins.taskstack.rs.request.TaskStackSearchTaskRequest;
@@ -137,20 +136,6 @@ public class TaskStackIdentityRest
             @HeaderParam( Constants.PARAM_APPLICATION_CODE ) @DefaultValue( "" ) final String strHeaderAppCode ) throws TaskStackException
     {
         final TaskStackGetTaskByResourceRequest request = new TaskStackGetTaskByResourceRequest( taskResourceId, taskResourceType, strHeaderClientCode,
-                authorName, authorType );
-        final GetTaskListResponse response = (GetTaskListResponse) request.doRequest( );
-        return Response.status( response.getStatus( ).getHttpCode( ) ).entity( response ).type( MediaType.APPLICATION_JSON_TYPE ).build( );
-    }
-
-    @GET
-    @Path( Constants.TASK_PATH + Constants.MERGE_PATH )
-    @Produces( MediaType.APPLICATION_JSON )
-    public Response getTaskBySecondCuid( @QueryParam( Constants.TASK_SECOND_CUID_PARAM ) final String taskResourceId,
-            @HeaderParam( Constants.PARAM_CLIENT_CODE ) final String strHeaderClientCode, @HeaderParam( Constants.PARAM_AUTHOR_NAME ) final String authorName,
-            @HeaderParam( Constants.PARAM_AUTHOR_TYPE ) final String authorType,
-            @HeaderParam( Constants.PARAM_APPLICATION_CODE ) @DefaultValue( "" ) final String strHeaderAppCode ) throws TaskStackException
-    {
-        final TaskStackGetTaskBySecondCuidRequest request = new TaskStackGetTaskBySecondCuidRequest( taskResourceId, strHeaderClientCode,
                 authorName, authorType );
         final GetTaskListResponse response = (GetTaskListResponse) request.doRequest( );
         return Response.status( response.getStatus( ).getHttpCode( ) ).entity( response ).type( MediaType.APPLICATION_JSON_TYPE ).build( );

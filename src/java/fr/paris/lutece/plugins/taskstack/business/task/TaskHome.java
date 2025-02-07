@@ -45,6 +45,7 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class TaskHome
 {
@@ -136,15 +137,15 @@ public class TaskHome
     }
 
     public static List<Task> search(final String strTaskCode, final String strResourceId, final String strResourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-                                    final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned ) throws JsonProcessingException
+                                    final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Map<String, String> metadata ) throws JsonProcessingException
     {
-        return _taskDao.search( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, _plugin );
+        return _taskDao.search( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata, _plugin );
     }
 
     public static List<Integer> searchId(final String strTaskCode, final String strResourceId, final String strResourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-                                    final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned ) throws JsonProcessingException
+                                    final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Map<String, String> metadata ) throws JsonProcessingException
     {
-        return _taskDao.searchId( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, _plugin );
+        return _taskDao.searchId( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata, _plugin );
     }
 
     public static List<Task> get( final String strResourceId, final String strResourceType ) throws TaskStackException
@@ -152,18 +153,6 @@ public class TaskHome
         try
         {
             return _taskDao.selectByIdAndResourceType( strResourceId, strResourceType, _plugin );
-        }
-        catch( JsonProcessingException e )
-        {
-            throw new TaskStackException( "An error occurred trying to get Tasks by resource id and type: ", e );
-        }
-    }
-
-    public static List<Task> getBySecondCuid( final String strSecondCuid ) throws TaskStackException
-    {
-        try
-        {
-            return _taskDao.selectBySecondCuid( strSecondCuid, _plugin );
         }
         catch( JsonProcessingException e )
         {

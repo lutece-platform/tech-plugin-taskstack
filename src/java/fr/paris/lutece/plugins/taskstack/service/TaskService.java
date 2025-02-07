@@ -217,31 +217,13 @@ public class TaskService
         return taskDtos;
     }
 
-    public List<TaskDto> getTasksBySecondCuid( final String strSecondCuid ) throws TaskStackException
-    {
-        final List<Task> tasks = TaskHome.getBySecondCuid( strSecondCuid );
-
-        final List<TaskDto> taskDtos = new ArrayList<>( );
-        if ( tasks != null && !tasks.isEmpty( ) )
-        {
-            for ( final Task task : tasks )
-            {
-                final TaskDto taskDto = DtoMapper.toTaskDto( task );
-                taskDto.getTaskChanges( ).addAll( this.getTaskHistory( task.getTaskCode( ) ) );
-                taskDtos.add( taskDto );
-            }
-        }
-
-        return taskDtos;
-    }
-
     public List<TaskDto> search(final String _strTaskCode, final String _strResourceId, final String _strResourceType, final String _strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
-                                final CreationDateOrdering creationDateOrdering, final int max ) throws TaskStackException
+                                final CreationDateOrdering creationDateOrdering, final Map<String, String> metadata, final int max ) throws TaskStackException
     {
         int nMaxNbIdentityReturned = ( max > 0 ) ? max : PROPERTY_MAX_NB_TASK_RETURNED;
         try
         {
-            final List<Task> search = TaskHome.search( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned );
+            final List<Task> search = TaskHome.search( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata );
             return search.stream( ).map( DtoMapper::toTaskDto )
                     .peek( taskDto -> taskDto.getTaskChanges( ).addAll( this.getTaskHistory( taskDto.getTaskCode( ) ) ) ).collect( Collectors.toList( ) );
         }
@@ -252,12 +234,12 @@ public class TaskService
     }
 
     public List<Integer> searchId(final String _strTaskCode, final String _strResourceId, final String _strResourceType, final String _strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus, final Integer _nNbDaysSinceCreated,
-                                final CreationDateOrdering creationDateOrdering, final int max ) throws TaskStackException
+                                final CreationDateOrdering creationDateOrdering, final Map<String, String> metadata, final int max ) throws TaskStackException
     {
         int nMaxNbIdentityReturned = ( max > 0 ) ? max : PROPERTY_MAX_NB_TASK_RETURNED;
         try
         {
-            return TaskHome.searchId( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned );
+            return TaskHome.searchId( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata );
         }
         catch( final Exception e )
         {

@@ -93,7 +93,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
     private List<TaskDto> _stackTaskList = new ArrayList<>();
 
     @View( value = VIEW_TASK_SEARCH, defaultView = true )
-    public String getViewIndicators( HttpServletRequest request )
+    public String getViewTaskSearch( HttpServletRequest request )
     {
         initListQuery();
         final Map<String, String> queryParameters = this.getQueryParameters( request );
@@ -137,11 +137,11 @@ public class TaskSearchJspBean extends MVCAdminJspBean
                 {
                     final List<TaskStatusType> taskStatusTypes = new ArrayList<>( );
                     taskStatusTypes.add(TaskStatusType.valueOf(taskStatus));
-                    listTaskIds.addAll(TaskService.instance().searchId(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, taskStatusTypes, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
+                    listTaskIds.addAll(TaskService.instance().searchId(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, taskStatusTypes, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), null, 0));
                 }
                 else
                 {
-                    listTaskIds.addAll(TaskService.instance().searchId(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
+                    listTaskIds.addAll(TaskService.instance().searchId(taskCode, resourceId, resourceType, taskType, creationDate, lastUpdateDate, lastUpdateClientCode, null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), null, 0));
                 }
             } catch (TaskStackException e)
             {
@@ -153,7 +153,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
         {
             try
             {
-                listTaskIds.addAll(TaskService.instance().searchId("", "", "", "", null, null, "", null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), 0));
+                listTaskIds.addAll(TaskService.instance().searchId("", "", "", "", null, null, "", null, null, CreationDateOrdering.valueOf(CREATION_DATE_ORDER), null, 0));
             }
             catch (TaskStackException e)
             {

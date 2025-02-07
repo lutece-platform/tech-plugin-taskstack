@@ -77,7 +77,7 @@ public class TaskStackSearchTaskRequest extends AbstractTaskStackRequest
                 taskStatus.addAll( taskSearchRequest.getTaskStatus( ) );
             }
             final List<TaskDto> searchResults = TaskService.instance( ).search(null, null, null, taskSearchRequest.getTaskType( ), null, null, null, taskStatus,
-                    taskSearchRequest.getNbDaysSinceCreated( ), taskSearchRequest.getCreationDateOrdering( ), 0 );
+                    taskSearchRequest.getNbDaysSinceCreated( ), taskSearchRequest.getCreationDateOrdering( ), taskSearchRequest.getMetadata( ), 0 );
             final SearchTaskResponse response = new SearchTaskResponse( );
             response.getTasks( ).addAll( searchResults );
             final String successMessage = String.format(

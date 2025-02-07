@@ -38,7 +38,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
 import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @JsonRootName( "task_search" )
 public class SearchTaskRequest
@@ -55,6 +57,9 @@ public class SearchTaskRequest
 
     @JsonProperty( "creation_date_ordering" )
     protected CreationDateOrdering creationDateOrdering;
+
+    @JsonProperty( "metadata" )
+    protected Map<String, String> metadata = new HashMap<String, String>( );
 
     public String getTaskType( )
     {
@@ -94,5 +99,13 @@ public class SearchTaskRequest
     public void setCreationDateOrdering( CreationDateOrdering creationDateOrdering )
     {
         this.creationDateOrdering = creationDateOrdering;
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 }

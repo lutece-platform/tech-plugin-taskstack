@@ -40,6 +40,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface ITaskDAO
 {
@@ -58,14 +59,12 @@ public interface ITaskDAO
     void delete( final int nIdTask, final Plugin plugin );
 
     List<Task> search(final String strTaskCode, final String strRessourceId, final String strRessourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-                      final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Plugin plugin ) throws JsonProcessingException;
+                      final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Map<String, String> metadata, final Plugin plugin ) throws JsonProcessingException;
 
     List<Integer> searchId(final String strTaskCode, final String strRessourceId, final String strRessourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-                      final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Plugin plugin ) throws JsonProcessingException;
+                      final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Map<String, String> metadata, final Plugin plugin ) throws JsonProcessingException;
 
     List<Task> selectByIdAndResourceType( final String strResourceId, final String strResourceType, final Plugin plugin ) throws JsonProcessingException;
-
-    List<Task> selectBySecondCuid( final String strSecondCuid, final Plugin plugin ) throws JsonProcessingException;
 
     List<Task> selectTasksListByIds( final List<Integer> listId, final Plugin plugin ) throws JsonProcessingException;
 }

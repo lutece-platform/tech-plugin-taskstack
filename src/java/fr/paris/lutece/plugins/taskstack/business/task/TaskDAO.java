@@ -37,7 +37,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
-import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -49,7 +48,6 @@ import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -62,14 +60,27 @@ public class TaskDAO implements ITaskDAO
     private static final int RETENTION = AppPropertiesService.getPropertyInt( "taskstack.task.retention.days.number", 0 );
 
     // Constants
+    private static final String TASK_CODE_CRITERIA = "${task_code_criteria}";
+    private static final String TASK_RESOURCE_ID_CRITERIA = "${task_resource_id_criteria}";
+    private static final String TASK_RESOURCE_TYPE_CRITERIA = "${task_resource_type_criteria}";
+    private static final String TASK_TYPE_CRITERIA = "${task_type_criteria}";
+    private static final String TASK_CREATION_DATE_CRITERIA = "${task_creation_date_criteria}";
+    private static final String TASK_LAST_UPDATE_CRITERIA = "${task_last_update_criteria}";
+    private static final String TASK_LAST_UPDATE_CLIENT_CODE_CRITERIA = "${task_last_update_client_code_criteria}";
+    private static final String TASK_STATUS_CRITERIA = "${task_status_criteria}";
+    private static final String NB_DAYS_CREATION_CRITERIA = "${nb_days_creation_criteria}";
+    private static final String METADATA_CRITERIA = "${metadata_criteria}";
+    private static final String ORDER_CRITERIA = "${order_criteria}";
+    private static final String LIMIT = "${limit}";
+
+    // Requests
     private static final String SQL_QUERY_SELECT = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id = ?";
     private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";
     private static final String SQL_QUERY_SELECT_BY_ID_AND_RESOURCE_TYPE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE resource_id = ? AND resource_type = ?";
     private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id IN (";
     private static final String SQL_QUERY_SELECT_BY_VALIDITY = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE stack_task.expiration_date < now();";
-    private static final String SQL_QUERY_SELECT_BY_SECOND_CUID = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE (type = 'ACCOUNT_IDENTITY_MERGE_REQUEST' OR type = 'ACCOUNT_MERGE_REQUEST' ) AND metadata::text LIKE ?";
-    private static final String SQL_QUERY_SEARCH = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE ${task_code_criteria} AND ${task_resource_id_criteria} AND ${task_resource_type_criteria} AND ${task_type_criteria} AND ${task_creation_date_criteria} AND ${task_last_update_criteria} AND ${task_last_update_client_code_criteria} AND ${task_status_criteria} AND ${nb_days_creation_criteria} ${order_criteria} LIMIT ${limit}";
-    private static final String SQL_QUERY_SEARCH_ID = "SELECT id FROM stack_task WHERE ${task_code_criteria} AND ${task_resource_id_criteria} AND ${task_resource_type_criteria} AND ${task_type_criteria} AND ${task_creation_date_criteria} AND ${task_last_update_criteria} AND ${task_last_update_client_code_criteria} AND ${task_status_criteria} AND ${nb_days_creation_criteria} ${order_criteria} LIMIT ${limit}";
+    private static final String SQL_QUERY_SEARCH = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE " + TASK_CODE_CRITERIA + " AND " + TASK_RESOURCE_ID_CRITERIA + " AND " + TASK_RESOURCE_TYPE_CRITERIA + " AND " + TASK_TYPE_CRITERIA + " AND " + TASK_CREATION_DATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CLIENT_CODE_CRITERIA + " AND " + TASK_STATUS_CRITERIA + " AND " + NB_DAYS_CREATION_CRITERIA + " AND " + METADATA_CRITERIA + " " + ORDER_CRITERIA + " LIMIT " + LIMIT;
+    private static final String SQL_QUERY_SEARCH_ID = "SELECT id FROM stack_task WHERE " + TASK_CODE_CRITERIA + " AND " + TASK_RESOURCE_ID_CRITERIA + " AND " + TASK_RESOURCE_TYPE_CRITERIA + " AND " + TASK_TYPE_CRITERIA + " AND " + TASK_CREATION_DATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CLIENT_CODE_CRITERIA + " AND " + TASK_STATUS_CRITERIA + " AND " + NB_DAYS_CREATION_CRITERIA + " AND " + METADATA_CRITERIA + " " + ORDER_CRITERIA + " LIMIT " + LIMIT;
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task ( code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, expiration_date, status, metadata ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, to_json(?::json) ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task WHERE id = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE stack_task SET code = ?, resource_id = ?, resource_type = ?, type = ?, creation_date = ?, last_update_date = ?, last_update_client_code = ?, status = ?, metadata = to_json(?::json) WHERE code = ?";
@@ -209,15 +220,13 @@ public class TaskDAO implements ITaskDAO
     }
 
     @Override
-    public List<Task> search(final String strTaskCode, final String strResourceId, final String strResourceType, String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, List<TaskStatusType> enumTaskStatus, Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned,
-                             Plugin plugin ) throws JsonProcessingException
+    public List<Task> search(final String strTaskCode, final String strResourceId, final String strResourceType, String strTaskType, final Date creationDate,
+                             final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
+                             final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Map<String, String> metadata, final Plugin plugin ) throws JsonProcessingException
     {
 
-        String sqlQuerySearch = SQL_QUERY_SEARCH;
-        sqlQuerySearch = sqlSearchParameters(strTaskCode, strResourceId, strResourceType, strTaskType, creationDate,
-                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, sqlQuerySearch);
-
-        sqlQuerySearch = sqlQuerySearch.replace( "${limit}", String.valueOf( nMaxNbIdentityReturned ) );
+        final String sqlQuerySearch = this.fillCriterias(strTaskCode, strResourceId, strResourceType, strTaskType, creationDate,
+                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata, SQL_QUERY_SEARCH);
 
         try ( final DAOUtil daoUtil = new DAOUtil( sqlQuerySearch, plugin ) )
         {
@@ -232,15 +241,13 @@ public class TaskDAO implements ITaskDAO
     }
 
     @Override
-    public List<Integer> searchId(final String strTaskCode, final String strResourceId, final String strResourceType, String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, List<TaskStatusType> enumTaskStatus, Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned,
-                             Plugin plugin ) throws JsonProcessingException
+    public List<Integer> searchId(final String strTaskCode, final String strResourceId, final String strResourceType, String strTaskType, final Date creationDate,
+                                  final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
+                                  final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Map<String, String> metadata, Plugin plugin ) throws JsonProcessingException
     {
 
-        String sqlQuerySearch = SQL_QUERY_SEARCH_ID;
-        sqlQuerySearch = sqlSearchParameters(strTaskCode, strResourceId, strResourceType, strTaskType, creationDate,
-                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, sqlQuerySearch);
-
-        sqlQuerySearch = sqlQuerySearch.replace( "${limit}", String.valueOf( nMaxNbIdentityReturned ) );
+        final String sqlQuerySearch = this.fillCriterias(strTaskCode, strResourceId, strResourceType, strTaskType, creationDate,
+                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata, SQL_QUERY_SEARCH_ID);
 
         try ( final DAOUtil daoUtil = new DAOUtil( sqlQuerySearch, plugin ) )
         {
@@ -254,102 +261,120 @@ public class TaskDAO implements ITaskDAO
         }
     }
 
-    public String sqlSearchParameters( final String strTaskCode, final String strResourceId, final String strResourceType,
-                                      String strTaskType, final Date creationDate, final Date lastUpdatedate,
-                                      final String strLastUpdateClientCode, List<TaskStatusType> enumTaskStatus,
-                                      Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering, String sqlQuerySearch )
+    public String fillCriterias(final String strTaskCode, final String strResourceId, final String strResourceType,
+                                String strTaskType, final Date creationDate, final Date lastUpdatedate,
+                                final String strLastUpdateClientCode, List<TaskStatusType> enumTaskStatus,
+                                Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering, Integer limit, Map<String, String> metadata, String sqlQuerySearch )
     {
         if ( StringUtils.isNotBlank( strTaskCode ) )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_code_criteria}", "code='" + strTaskCode + "'" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_CODE_CRITERIA, "code='" + strTaskCode + "'" );
         }
         else
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_code_criteria}", "1=1" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_CODE_CRITERIA, "1=1" );
         }
 
         if ( StringUtils.isNotBlank( strResourceId ) )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_resource_id_criteria}", "resource_id='" + strResourceId + "'" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_RESOURCE_ID_CRITERIA, "resource_id='" + strResourceId + "'" );
         }
         else
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_resource_id_criteria}", "1=1" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_RESOURCE_ID_CRITERIA, "1=1" );
         }
 
         if ( StringUtils.isNotBlank( strResourceType ) )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_resource_type_criteria}", "resource_type='" + strResourceType + "'" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_RESOURCE_TYPE_CRITERIA, "resource_type='" + strResourceType + "'" );
         }
         else
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_resource_type_criteria}", "1=1" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_RESOURCE_TYPE_CRITERIA, "1=1" );
         }
 
         if ( StringUtils.isNotBlank( strTaskType ) )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_type_criteria}", "type='" + strTaskType + "'" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_TYPE_CRITERIA, "type='" + strTaskType + "'" );
         }
         else
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_type_criteria}", "1=1" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_TYPE_CRITERIA, "1=1" );
         }
 
         if(creationDate != null )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_creation_date_criteria}", "creation_date >= '" + creationDate +
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_CREATION_DATE_CRITERIA, "creation_date >= '" + creationDate +
                     "' AND creation_date < '" + DateUtils.addDays(creationDate, 1) + "'" );
         }
         else
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_creation_date_criteria}",  "1=1" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_CREATION_DATE_CRITERIA,  "1=1" );
         }
 
         if(lastUpdatedate != null )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_last_update_criteria}", "last_update_date >= '" + lastUpdatedate +
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_LAST_UPDATE_CRITERIA, "last_update_date >= '" + lastUpdatedate +
                     "' AND last_update_date < '" + DateUtils.addDays(lastUpdatedate, 1) + "'" );
         }
         else
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_last_update_criteria}",  "1=1" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_LAST_UPDATE_CRITERIA,  "1=1" );
         }
 
         if ( StringUtils.isNotBlank( strLastUpdateClientCode ) )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_last_update_client_code_criteria}", "last_update_client_code='" + strLastUpdateClientCode + "'" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_LAST_UPDATE_CLIENT_CODE_CRITERIA, "last_update_client_code='" + strLastUpdateClientCode + "'" );
         }
         else
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_last_update_client_code_criteria}", "1=1" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_LAST_UPDATE_CLIENT_CODE_CRITERIA, "1=1" );
         }
 
         if ( enumTaskStatus != null && !enumTaskStatus.isEmpty( ) )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_status_criteria}",
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_STATUS_CRITERIA,
                     "status IN ('" + enumTaskStatus.stream( ).map( Enum::name ).collect( Collectors.joining( "', '" ) ) + "')" );
         }
         else
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${task_status_criteria}", "1=1" );
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_STATUS_CRITERIA, "1=1" );
         }
 
         if ( nNbDaysSinceCreated != null && nNbDaysSinceCreated > 0 )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${nb_days_creation_criteria}", "creation_date > now() - interval '" + nNbDaysSinceCreated + "' day" );
+            sqlQuerySearch = sqlQuerySearch.replace( NB_DAYS_CREATION_CRITERIA, "creation_date > now() - interval '" + nNbDaysSinceCreated + "' day" );
         }
         else
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${nb_days_creation_criteria}", "1=1" );
+            sqlQuerySearch = sqlQuerySearch.replace( NB_DAYS_CREATION_CRITERIA, "1=1" );
         }
 
         if ( creationDateOrdering != null )
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${order_criteria}", " ORDER BY creation_date " + creationDateOrdering.name( ) );
+            sqlQuerySearch = sqlQuerySearch.replace( ORDER_CRITERIA, " ORDER BY creation_date " + creationDateOrdering.name( ) );
         }
         else
         {
-            sqlQuerySearch = sqlQuerySearch.replace( "${order_criteria}", "" );
+            sqlQuerySearch = sqlQuerySearch.replace( ORDER_CRITERIA, "" );
+        }
+
+        if( metadata != null && !metadata.isEmpty( ) )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( METADATA_CRITERIA, this.computeMetadaQuery( metadata ) );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( METADATA_CRITERIA, "1=1" );
+        }
+
+        if( limit != null )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( LIMIT, String.valueOf( limit ) );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( LIMIT, "100" );
         }
         return sqlQuerySearch;
     }
@@ -362,22 +387,6 @@ public class TaskDAO implements ITaskDAO
         {
             daoUtil.setString( 1, strResourceId );
             daoUtil.setString( 2, strResourceType );
-            daoUtil.executeQuery( );
-            while ( daoUtil.next( ) )
-            {
-                tasks.add( this.getTask( daoUtil ) );
-            }
-        }
-        return tasks;
-    }
-
-    @Override
-    public List<Task> selectBySecondCuid( final String strSecondCuid, final Plugin plugin ) throws JsonProcessingException
-    {
-        final List<Task> tasks = new ArrayList<>( );
-        try ( final DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_SECOND_CUID, plugin ) )
-        {
-            daoUtil.setString( 1, '%'+strSecondCuid+'%' );
             daoUtil.executeQuery( );
             while ( daoUtil.next( ) )
             {
@@ -443,6 +452,12 @@ public class TaskDAO implements ITaskDAO
             }
         }
         return task;
+    }
+
+    private String computeMetadaQuery( Map<String, String> metadata )
+    {
+        return metadata.entrySet( ).stream( ).map( entry -> "string_to_array(metadata ->> '" + entry.getKey( ) + "',',') @>'{" + entry.getValue( ) + "}'" )
+                .collect( Collectors.joining( " AND " ) );
     }
 
 }
