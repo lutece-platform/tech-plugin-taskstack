@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.sql.DAOUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -58,6 +59,8 @@ public class TaskDAO implements ITaskDAO
 {
 
     public static final String BEAN_NAME = "taskstack.task.dao";
+    private static final int RETENTION = AppPropertiesService.getPropertyInt( "taskstack.task.retention.days.number", 0 );
+
     // Constants
     private static final String SQL_QUERY_SELECT = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id = ?";
     private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";
@@ -82,6 +85,7 @@ public class TaskDAO implements ITaskDAO
             final ZonedDateTime now = ZonedDateTime.now( ZoneId.systemDefault( ) );
             task.setCreationDate( Timestamp.from( now.toInstant( ) ) );
             task.setLastUpdateDate( Timestamp.from( now.toInstant( ) ) );
+            task.setExpirationDate( Timestamp.valueOf( task.getCreationDate( ).toLocalDateTime( ).plusDays( RETENTION ) ) );
 
             int i = 0;
             daoUtil.setString( ++i, task.getTaskCode( ) );
