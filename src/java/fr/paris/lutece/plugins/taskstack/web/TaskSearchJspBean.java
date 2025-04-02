@@ -59,6 +59,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
     //Markers
     private static final String JSP_TASK_STACK = "jsp/admin/plugins/taskstack/TaskSearch.jsp";
     private static final String MARK_STACK_TASK_LIST = "stack_task_list";
+    private static final String MARK_STACK_TASK_LIST_TIMESTAMP = "stack_task_list_timestamp";
     private static final String MARK_PAGINATOR = "paginator";
     private static final String MARK_NB_ITEMS_PER_PAGE = "nb_items_per_page";
     private static final String MARK_TASK_TYPE_LIST = "task_type_list";
@@ -292,12 +293,20 @@ public class TaskSearchJspBean extends MVCAdminJspBean
         // PAGINATOR
         LocalizedPaginator<Integer> paginator = new LocalizedPaginator<>( list, _nItemsPerPage, strUrl, AbstractPaginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
         _stackTaskList = getTasksListByIds( paginator.getPageItems());
-
+        Map< String, List< Long > > taskTimestamp = new HashMap< String, List< Long > >();
+        _stackTaskList.forEach(task ->
+        {
+            List<Long> taskTimestampList = new ArrayList<>( );
+            taskTimestampList.add(task.getCreationDate().getTime());
+            taskTimestampList.add(task.getLastUpdateDate().getTime());
+         taskTimestamp.put(task.getTaskCode(), taskTimestampList );
+        });
         Map<String, Object> model = getModel(  );
 
         model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
         model.put( MARK_PAGINATOR, paginator );
         model.put( MARK_STACK_TASK_LIST, _stackTaskList);
+        model.put( MARK_STACK_TASK_LIST_TIMESTAMP, taskTimestamp);
         return model;
     }
 

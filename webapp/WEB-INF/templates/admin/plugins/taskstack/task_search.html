@@ -115,8 +115,12 @@
                         </td>
                         <td>${stack_task.resourceType!}</td>
                         <td>${stack_task.taskType!}</td>
-                        <td>${stack_task.creationDate!}</td>
-                        <td>${stack_task.lastUpdateDate!}</td>
+                        <#list stack_task_list_timestamp?keys as key>
+                            <#if key = stack_task.taskCode>
+                                <td><input type="hidden" value="${stack_task_list_timestamp[key][0]!}" />${stack_task.creationDate!}</td>
+                                <td><input type="hidden" value="${stack_task_list_timestamp[key][1]!}" />${stack_task.lastUpdateDate!}</td>
+                            </#if>
+                        </#list>
                         <td>${stack_task.lastUpdateClientCode!}</td>
                         <td>
                             <#if stack_task.taskStatus == "TODO">
