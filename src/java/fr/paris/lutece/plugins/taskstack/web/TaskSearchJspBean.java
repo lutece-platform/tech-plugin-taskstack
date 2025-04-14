@@ -288,6 +288,8 @@ public class TaskSearchJspBean extends MVCAdminJspBean
         _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, nDefaultItemsPerPage );
 
         UrlItem url = new UrlItem( JSP_TASK_STACK );
+        final Map<String, String> queryParameters = this.getQueryParameters( request );
+        queryParameters.forEach( url::addParameter );
         String strUrl = url.getUrl(  );
 
         // PAGINATOR
