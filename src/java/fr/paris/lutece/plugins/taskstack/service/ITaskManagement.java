@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.taskstack.service;
 
-import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
+import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeType;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.plugins.taskstack.exception.TaskValidationException;
 
@@ -44,4 +44,9 @@ public interface ITaskManagement
     void doBefore( final TaskDto task ) throws TaskValidationException;
 
     void doAfter( final TaskDto task ) throws TaskValidationException;
+
+    default void checkAccess( final TaskDto task, TaskChangeType type ) throws TaskValidationException
+    {
+        // no check
+    }
 }

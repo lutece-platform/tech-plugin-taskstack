@@ -38,5 +38,6 @@ public enum TaskChangeType
     CREATED,
     UPDATED,
     DELETED,
-    REFUSED
+    REFUSED,
+    READ
 }
