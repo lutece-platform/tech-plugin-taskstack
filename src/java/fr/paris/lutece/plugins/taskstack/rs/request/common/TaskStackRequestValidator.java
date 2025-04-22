@@ -33,17 +33,15 @@
  */
 package fr.paris.lutece.plugins.taskstack.rs.request.common;
 
-import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import fr.paris.lutece.plugins.taskstack.consumer.ProvidedTaskType;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 import fr.paris.lutece.plugins.taskstack.rs.dto.CreateTaskRequest;
 import fr.paris.lutece.plugins.taskstack.rs.dto.SearchTaskRequest;
 import fr.paris.lutece.plugins.taskstack.rs.dto.UpdateTaskStatusRequest;
 import fr.paris.lutece.plugins.taskstack.util.Constants;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
 
 public class TaskStackRequestValidator
 {

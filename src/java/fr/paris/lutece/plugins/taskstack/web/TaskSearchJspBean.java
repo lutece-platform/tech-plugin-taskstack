@@ -1,10 +1,28 @@
 package fr.paris.lutece.plugins.taskstack.web;
 
+import java.io.ByteArrayOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+
 import fr.paris.lutece.plugins.taskstack.business.task.TaskStatusType;
+import fr.paris.lutece.plugins.taskstack.consumer.ProvidedTaskType;
 import fr.paris.lutece.plugins.taskstack.csv.Batch;
 import fr.paris.lutece.plugins.taskstack.csv.CsvTaskService;
 import fr.paris.lutece.plugins.taskstack.dto.CreationDateOrdering;
-import fr.paris.lutece.plugins.taskstack.dto.IdentityTaskType;
 import fr.paris.lutece.plugins.taskstack.dto.TaskChangeDto;
 import fr.paris.lutece.plugins.taskstack.dto.TaskDto;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
@@ -17,24 +35,6 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.web.util.LocalizedPaginator;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayOutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Controller( controllerJsp = "TaskSearch.jsp", controllerPath = "jsp/admin/plugins/taskstack/", right = "TASKSTACK_MANAGEMENT" )
 public class TaskSearchJspBean extends MVCAdminJspBean
@@ -162,7 +162,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
                 return redirectView(request, VIEW_TASK_SEARCH);
             }
         }
-        List<String> taskTypeList =  Arrays.stream(IdentityTaskType.class.getEnumConstants()).map(Enum::name).collect(Collectors.toList());
+        List<String> taskTypeList =  ProvidedTaskType.values ( );
         try
         {
             Map<String, Object> model = getPaginatedListModel(request, listTaskIds);
