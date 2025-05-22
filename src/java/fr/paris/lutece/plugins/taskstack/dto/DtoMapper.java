@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.taskstack.dto;
 
 import fr.paris.lutece.plugins.taskstack.business.task.Task;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskChange;
+import fr.paris.lutece.plugins.taskstack.business.taskright.TaskRight;
 import fr.paris.lutece.plugins.taskstack.rs.request.common.AuthorType;
 import fr.paris.lutece.plugins.taskstack.rs.request.common.RequestAuthor;
 
@@ -85,5 +86,27 @@ public class DtoMapper
         taskChangeDto.setAuthor( author );
         taskChangeDto.setClientCode( taskChange.getClientCode( ) );
         return taskChangeDto;
+    }
+
+    public static TaskRight clientTaskDtoToClientTask(TaskRightDto taskRightDto)
+    {
+        TaskRight taskRight = new TaskRight( );
+
+        taskRight.setAuthorizedClientCode( taskRightDto.getAuthorizedClientCode( ) );
+        taskRight.setGranteeClientCode( taskRightDto.getGranteeClientCode( ) );
+        taskRight.setTaskType( taskRightDto.getTaskType( ) );
+
+        return taskRight;
+    }
+
+    public static TaskRightDto clientTaskToClientTaskDto(TaskRight taskRight)
+    {
+        TaskRightDto taskRightDto = new TaskRightDto( );
+
+        taskRightDto.setAuthorizedClientCode( taskRight.getAuthorizedClientCode( ) );
+        taskRightDto.setGranteeClientCode( taskRight.getGranteeClientCode( ) );
+        taskRightDto.setTaskType( taskRight.getTaskType( ) );
+
+        return taskRightDto;
     }
 }

@@ -1,0 +1,11 @@
+<#macro tabs tab >
+    <@tabList>
+        <@tabLink active=( tab == "tasksearch" )
+            title="#i18n{taskstack.title}"
+            href="jsp/admin/plugins/taskstack/TaskSearch.jsp"  />
+
+        <@tabLink active=( tab == "taskright" )
+            title="#i18n{taskstack.view_task_right.title}"
+            href="jsp/admin/plugins/taskstack/TaskRight.jsp"  />
+    </@tabList>
+</#macro>

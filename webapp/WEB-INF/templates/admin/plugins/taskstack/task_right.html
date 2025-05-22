@@ -1,0 +1,88 @@
+<#include "task_tabs.html" />
+<@tabs tab="taskright" />
+<@pageContainer>
+    <@rowBox>
+        <@boxHeader i18nTitleKey="taskstack.view_task_right.title">
+            <@offcanvas targetUrl="jsp/admin/plugins/taskstack/TaskRight.jsp?view_createTaskRight" targetElement="#create-task-right-form" redirectForm=false id="create-task-right" title="#i18n{taskstack.view_task_right.title}" btnTitle="#i18n{taskstack.view_task_right.buttonAdd}" btnIcon="plus" position="end" />
+        </@boxHeader>
+        <@boxBody>
+            <@messages infos=infos />
+            <@messages errors=errors />
+            <@messages warnings=warnings />
+            <div style="padding: .5rem .5rem;">
+                <a class="btn btn-primary btn-empty" title="#i18n{taskstack.emptyFields}">
+                    <i class="fa fa-trash"></i>
+                </a>
+            </div>
+            <form class="form-inline" action="jsp/admin/plugins/taskstack/TaskRight.jsp" style="width:98vw;">
+                <div class="input-group">
+                    <@table id="search-result-table">
+                        <tr>
+                            <th>#i18n{taskstack.view_task_right.authorized_client_code}</th>
+                            <th>#i18n{taskstack.view_task_right.grantee_client_code}</th>
+                            <th>#i18n{taskstack.view_task_right.task_type}</th>
+                            <th></th>
+                        </tr>
+                        <@tableHeadBodySeparator />
+                        <tr>
+                            <td>
+                                <input class="form-control search-field" type="text" name="authorized_client_code"
+                                       placeholder="#i18n{taskstack.view_task_right.authorized_client_code}" value="${authorized_client_code!''}" />
+                            </td>
+                            <td>
+                                <input class="form-control search-field" type="text" name="grantee_client_code"
+                                       placeholder="#i18n{taskstack.view_task_right.grantee_client_code}" value="${grantee_client_code!''}" />
+                            </td>
+                            <td>
+                                <select class="form-select" id="task_type" name="task_type" value="${task_type!''}">
+                                    <option value="" > - </option>
+                                    <option value="*" >#i18n{taskstack.view_task_right.task_type.all}</option>
+                                    <#list task_type_list as search_task_type >
+                                        <option value="${search_task_type}" <#if search_task_type == (task_type!'')>selected</#if> >${search_task_type}</option>
+                                    </#list>
+                                </select>
+                            </td>
+                            <td>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit">
+                                        <span class="fa fa-search"></span>
+                                    </button>
+                                </span>
+                            </td>
+                        </tr>
+                    </@table>
+                </div>
+            </form>
+
+            <@paginationAdmin paginator=paginator combo=1 />
+            <table id="task-stack-table" class="table table-condensed table-striped">
+                <tr>
+                    <th onclick="sortTable(0, 'task-stack-table')">#i18n{taskstack.view_task_right.authorized_client_code}</th>
+                    <th onclick="sortTable(1, 'task-stack-table')">#i18n{taskstack.view_task_right.grantee_client_code}</th>
+                    <th onclick="sortTable(2, 'task-stack-table')">#i18n{taskstack.view_task_right.task_type}</th>
+                    <th></th>
+                </tr>
+                <#if task_right_list??  && task_right_list?has_content>
+                    <#list task_right_list as task_right>
+                        <tr>
+                            <td>${task_right.authorizedClientCode!}</td>
+                            <td>${task_right.granteeClientCode!}</td>
+                            <td>${task_right.taskType!}</td>
+                            <td>
+                                <@aButton href='jsp/admin/plugins/taskstack/TaskRight.jsp?action=confirmDeleteTaskRight&authorized_client_code=${task_right.authorizedClientCode}&grantee_client_code=${task_right.granteeClientCode}&task_type=${task_right.taskType}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+                            </td>
+                        </tr>
+                    </#list>
+                </#if>
+            </table>
+            <@paginationAdmin paginator=paginator />
+        </@boxBody>
+    </@rowBox>
+
+    <script src="./js/admin/plugins/identitystore/table.js"></script>
+    <script>
+        $('.btn-empty').click(function () {
+            $('.search-field').val('');
+        });
+    </script>
+</@pageContainer>

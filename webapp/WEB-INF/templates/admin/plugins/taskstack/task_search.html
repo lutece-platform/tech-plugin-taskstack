@@ -1,3 +1,5 @@
+<#include "task_tabs.html" />
+<@tabs tab="tasksearch" />
 <@pageContainer>
     <@rowBox>
         <@boxHeader i18nTitleKey="taskstack.title">
@@ -12,11 +14,11 @@
             <@messages errors=errors />
             <@messages warnings=warnings />
             <div style="padding: .5rem .5rem;">
-                <a class="btn btn-primary btn-empty" title="#i18n{identitystore.manage_identities.emptyFields}">
+                <a class="btn btn-primary btn-empty" title="#i18n{taskstack.emptyFields}">
                     <i class="fa fa-trash"></i>
                 </a>
             </div>
-            <form class="form-inline" action="jsp/admin/plugins/taskstack/TaskSearch.jsp">
+            <form class="form-inline" action="jsp/admin/plugins/taskstack/TaskSearch.jsp" style="width:98vw;">
                 <div class="input-group">
                     <@table id="search-result-table">
                         <tr>
@@ -66,7 +68,7 @@
                             <td>
                                 <label for="task_status" />
                                 <select class="search-field form-select select-type" id="task_status" name="task_status" value="${task_status!''}" >
-                                    <option value="">#i18n{identitystore.view_change_history.no.type}</option>
+                                    <option value="">#i18n{taskstack.no.type}</option>
                                     <option value="TODO" <#if task_status! == "TODO"> selected="selected"</#if>>TODO</option>
                                     <option value="IN_PROGRESS" <#if task_status! == "IN_PROGRESS"> selected="selected"</#if>>IN_PROGRESS</option>
                                     <option value="PROCESSED" <#if task_status! == "PROCESSED"> selected="selected"</#if>>PROCESSED</option>
@@ -87,7 +89,7 @@
             </form>
 
             <@paginationAdmin paginator=paginator combo=1 />
-            <table id="task-stack-table" class="table table-condensed table-striped">
+            <table id="task-stack-table" class="table table-condensed table-striped" style="width:98vw;">
                 <tr>
                     <th onclick="sortTable(0, 'task-stack-table')">#i18n{taskstack.view_task_stack.code}</th>
                     <th onclick="sortTable(1, 'task-stack-table')">#i18n{taskstack.view_task_stack.resource.id}</th>
@@ -106,7 +108,7 @@
                             <td>
                                 <#if cuid_link?has_content>
                                     <a href="${cuid_link}${stack_task.resourceId!}"
-                                       title="#i18n{identitystore.manage_identities.buttonView}">
+                                       title="#i18n{taskstack.buttonView}">
                                         ${stack_task.resourceId!}
                                     </a>
                                 <#else>
@@ -143,7 +145,7 @@
                                 </#list>
                             </td>
                             <td>
-                                <@offcanvas targetUrl="jsp/admin/plugins/taskstack/TaskSearch.jsp?view=viewTaskHistory&task_code=${stack_task.taskCode}" targetElement="#history-container" id="history-container-${stack_task?index}" title="#i18n{taskstack.view_task_stack.history.title}" btnTitle="#i18n{taskstack.view_task_stack.history.show}" btnIcon="eye" btnTitleShow=false size="auto" bodyClass="p-0" />
+                                <@offcanvas targetUrl="jsp/admin/plugins/taskstack/TaskSearch.jsp?view=viewTaskHistory&task_code=${stack_task.taskCode}" targetElement="#history-container" id="history-container-${stack_task?index}" title="#i18n{taskstack.view_task_stack.history.title}" btnIcon="eye" size="auto" bodyClass="p-0" />
                             </td>
                         </tr>
                     </#list>

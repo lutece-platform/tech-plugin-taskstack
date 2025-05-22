@@ -7,7 +7,9 @@
     <!-- DAO -->
     <bean id="taskstack.task.dao" class="fr.paris.lutece.plugins.taskstack.business.task.TaskDAO" />
     <bean id="taskstack.task.change.dao" class="fr.paris.lutece.plugins.taskstack.business.task.TaskChangeDAO" />
+    <bean id="taskstack.task.right.dao" class="fr.paris.lutece.plugins.taskstack.business.taskright.TaskRightDAO" />
 
     <!-- REST -->
     <bean id="taskstack.taskStackIdentityRest" class="fr.paris.lutece.plugins.taskstack.rs.TaskStackIdentityRest" />
+    <bean id="taskstack.taskRightRest" class="fr.paris.lutece.plugins.taskstack.rs.TaskRightRest" />
 </beans>

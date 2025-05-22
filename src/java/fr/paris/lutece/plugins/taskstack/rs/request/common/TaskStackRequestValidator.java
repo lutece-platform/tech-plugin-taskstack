@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.taskstack.rs.request.common;
 
+import fr.paris.lutece.plugins.taskstack.dto.TaskRightDto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -166,6 +167,14 @@ public class TaskStackRequestValidator
         if ( StringUtils.isBlank( taskResourceType ) )
         {
             throw new TaskStackException( "Provided task resource type is null or empty" );
+        }
+    }
+
+    public void checkClientTask(final TaskRightDto taskRightDto) throws TaskStackException
+    {
+        if( taskRightDto == null )
+        {
+            throw new TaskStackException( Constants.PROPERTY_REST_ERROR_CLIENT_TASK_NULL );
         }
     }
 }

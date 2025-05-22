@@ -1,0 +1,29 @@
+<@pageContainer>
+    <@pageColumn>
+        <@pageHeader title="#i18n{taskstack.create_task_right.title}" />
+        <@messages errors=errors />
+        <@tabContent>
+            <@tform name='create_task_right' id="create-task-right-form" action='jsp/admin/plugins/taskstack/TaskRight.jsp' >
+
+                <@formGroup labelFor='authorized_client_code' labelKey='#i18n{taskstack.view_task_right.authorized_client_code}' mandatory=true>
+                    <@input type='text' id='authorized_client_code' name='authorized_client_code'  maxlength=255 value='' tabIndex='1' />
+                </@formGroup>
+
+                <@formGroup labelFor='grantee_client_code' labelKey='#i18n{taskstack.view_task_right.grantee_client_code}' mandatory=true>
+                    <@input type='text' id='grantee_client_code' name='grantee_client_code'  maxlength=255 value='' tabIndex='1' />
+                </@formGroup>
+
+                <@formGroup labelFor='task_type' labelKey='#i18n{taskstack.view_task_right.task_type}' mandatory=true>
+                    <@select class="search-field form-select select-type" id="task_type" name="task_type" default_value="" tabIndex=2>
+                        <option value="" selected="selected" >-</option>
+                        <option value="*" >#i18n{taskstack.view_task_right.task_type.all}</option>
+                        <#list task_type_list as search_task_type >
+                            <option value="${search_task_type}">${search_task_type}</option>
+                        </#list>
+                    </@select>
+                </@formGroup>
+                <@actionButtons button1Name="action_createTaskRight" button2Name="view_manageTaskRight"/>
+            </@tform>
+        </@tabContent>
+    </@pageColumn>
+</@pageContainer>

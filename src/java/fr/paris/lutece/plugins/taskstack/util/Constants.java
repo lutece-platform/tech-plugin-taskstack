@@ -73,4 +73,17 @@ public class Constants
     public static final String PROPERTY_REST_INFO_SUCCESSFUL_OPERATION = "taskstack.rest.info.successful.operation";
     public static final String PROPERTY_REST_ERROR_DURING_TREATMENT = "taskstack.rest.error.during.treatment";
     public static final String PROPERTY_REST_ERROR_NO_TASK_FOUND = "taskstack.rest.error.no.task.found";
+    public static final String PROPERTY_REST_ERROR_CLIENT_TASK_NULL = "taskstack.rest.error.client.task.null";
+
+    /**
+     * ClientTaskRight
+     */
+    public static final String TASK_RIGHT_PATH = "/taskright";
+    public static final String DELETE_PATH = "/delete";
+    public static final String PARTIAL_SEARCH_PATH = "/search/";
+    public static final String COMPLETE_SEARCH_PATH = "/completesearch";
+    public static final String PARAM_SOURCE_CLIENT_CODE = "source_client_code";
+    public static final String PARAM_CLIENT_CODE_TASK_USER = "client_code_task_user";
+    public static final String PARAM_CLIENT_TASK_CREATE = "client_task_create";
+    public static final String PARAM_CLIENT_TASK_DELETE = "client_task_delete";
 }
