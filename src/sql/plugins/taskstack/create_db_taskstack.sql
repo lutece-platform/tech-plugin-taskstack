@@ -10,6 +10,7 @@ CREATE TABLE stack_task
     last_update_date        TIMESTAMP(3) NOT NULL,
     last_update_client_code VARCHAR(255) NOT NULL,
     status                  VARCHAR(50)  NOT NULL,
+    expiration_date TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP + INTERVAL '182' DAY,
     metadata                JSON DEFAULT NULL,
     CONSTRAINT stack_task_pkey PRIMARY KEY (id)
 );
