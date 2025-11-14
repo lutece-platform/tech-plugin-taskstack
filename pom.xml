@@ -7,16 +7,15 @@
     </parent>
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>plugin-taskstack</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.5</version>
     <packaging>lutece-plugin</packaging>
     <name>Plugin task stack</name>
-    <url>https://...</url>
 
     <scm>
         <connection>scm:git:https://github.com/lutece-platform/tech-plugin-taskstack</connection>
         <developerConnection>scm:git:https://github.com/lutece-platform/tech-plugin-taskstack</developerConnection>
         <url>https://github.com/lutece-platform/tech-plugin-taskstack</url>
-      <tag>HEAD</tag>
+      <tag>plugin-taskstack-1.0.5</tag>
   </scm>
 
     <properties>
