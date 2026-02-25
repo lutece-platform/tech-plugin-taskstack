@@ -42,6 +42,12 @@ public class CreateTaskResponse extends ResponseDto
     @JsonProperty( "task_code" )
     private String taskCode;
 
+    @JsonProperty( "resource_id" )
+    private String resourceId;
+
+    @JsonProperty( "resource_type" )
+    private String resourceType;
+
     public String getTaskCode( )
     {
         return taskCode;
@@ -50,5 +56,23 @@ public class CreateTaskResponse extends ResponseDto
     public void setTaskCode( final String taskCode )
     {
         this.taskCode = taskCode;
+    }
+
+    public String getResourceId( )
+    {
+        return resourceId;
+    }
+
+    public void setResourceId( String resourceId )
+    {
+        this.resourceId = resourceId;
+    }
+
+    public String getResourceType( ) {
+        return resourceType;
+    }
+
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
     }
 }

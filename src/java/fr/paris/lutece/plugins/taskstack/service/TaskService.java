@@ -56,6 +56,7 @@ import fr.paris.lutece.plugins.taskstack.exception.TaskNotFoundException;
 import fr.paris.lutece.plugins.taskstack.exception.TaskStackException;
 import fr.paris.lutece.plugins.taskstack.exception.TaskValidationException;
 import fr.paris.lutece.plugins.taskstack.rs.request.common.RequestAuthor;
+import fr.paris.lutece.plugins.taskstack.util.Constants;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.sql.TransactionManager;
@@ -126,7 +127,8 @@ public class TaskService
                 {
                     validationError = true;
                     taskDto.setTaskStatus( TaskStatusType.REFUSED );
-                    errMap.put( "Error", e.getMessage( ) );
+                    errMap.put( Constants.KEY_METADATA_ERROR, e.getMessage( ) );
+                    errMap.put( Constants.KEY_METADATA_I18N_KEY, e.getLocaleMessageKey( ) );
                     taskDto.setMetadata( errMap );
                 }
             }
@@ -157,7 +159,7 @@ public class TaskService
         catch( final Exception e )
         {
             TransactionManager.rollBack( null );
-            throw new TaskStackException( "An error occurred during task creation: " + e.getMessage( ), e );
+            throw new TaskStackException( "An error occurred during task creation: " + e.getMessage( ), e, Constants.PROPERTY_REST_ERROR_DURING_TREATMENT);
         }
     }
 
@@ -176,14 +178,14 @@ public class TaskService
         final Task existingTask = TaskHome.get( strTaskCode );
         if ( existingTask == null )
         {
-            throw new TaskNotFoundException( "Could not find task with code " + strTaskCode );
+            throw new TaskNotFoundException( "Could not find task with code " + strTaskCode, Constants.PROPERTY_REST_ERROR_NO_TASK_FOUND );
         }
 
         final ITaskManagement taskManager = taskManagementBeans.get( existingTask.getTaskType( ) );
 
         final TaskDto existingTaskDto = DtoMapper.toTaskDto( existingTask );
 
-        checkAccess( existingTaskDto, TaskChangeType.UPDATED );
+        this.checkAccess( existingTaskDto, TaskChangeType.UPDATED );
 
         existingTaskDto.setTaskStatus( newStatus );
         TransactionManager.beginTransaction( null );
@@ -214,7 +216,7 @@ public class TaskService
         catch( final Exception e )
         {
             TransactionManager.rollBack( null );
-            throw new TaskStackException( "An error occurred during task update: " + e.getMessage( ), e );
+            throw new TaskStackException( "An error occurred during task update: " + e.getMessage( ), e, Constants.PROPERTY_REST_ERROR_DURING_TREATMENT );
         }
     }
 
@@ -231,12 +233,12 @@ public class TaskService
 
         if ( existingTask == null )
         {
-            throw new TaskNotFoundException( "Could not find task with code " + strTaskCode );
+            throw new TaskNotFoundException( "Could not find task with code " + strTaskCode, Constants.PROPERTY_REST_ERROR_NO_TASK_FOUND );
         }
 
         final TaskDto taskDto = DtoMapper.toTaskDto( existingTask );
 
-        checkAccess( taskDto, TaskChangeType.READ );
+        this.checkAccess( taskDto, TaskChangeType.READ );
 
         taskDto.getTaskChanges( ).addAll( this.getTaskHistory( taskDto.getTaskCode( ) ) );
         return taskDto;
@@ -284,7 +286,7 @@ public class TaskService
                 final TaskDto taskDto = DtoMapper.toTaskDto( task );
                 try
                 {
-                    checkAccess( taskDto, TaskChangeType.READ );
+                    this.checkAccess( taskDto, TaskChangeType.READ );
                     taskDto.getTaskChanges( ).addAll( this.getTaskHistory( task.getTaskCode( ) ) );
                     taskDtos.add( taskDto );
                 }
@@ -336,7 +338,7 @@ public class TaskService
                 {
                     final TaskDto taskDto = DtoMapper.toTaskDto( t );
 
-                    checkAccess( taskDto, TaskChangeType.READ );
+                    this.checkAccess( taskDto, TaskChangeType.READ );
                     taskDto.getTaskChanges( ).addAll( this.getTaskHistory( taskDto.getTaskCode( ) ) );
                     taskList.add( taskDto );
                 }
@@ -348,7 +350,7 @@ public class TaskService
         }
         catch( final Exception e )
         {
-            throw new TaskStackException( "An error occurred during task search", e );
+            throw new TaskStackException( "An error occurred during task search", e, Constants.PROPERTY_REST_ERROR_DURING_TREATMENT );
         }
 
         return taskList;
@@ -386,7 +388,7 @@ public class TaskService
         }
         catch( final Exception e )
         {
-            throw new TaskStackException( "An error occurred during task search", e );
+            throw new TaskStackException( "An error occurred during task search", e, Constants.PROPERTY_REST_ERROR_DURING_TREATMENT );
         }
     }
 
@@ -414,12 +416,12 @@ public class TaskService
     {
         if ( task == null || task.getId( ) == null )
         {
-            throw new TaskStackException( "Could not delete null task " );
+            throw new TaskStackException( "Could not delete null task ", Constants.PROPERTY_REST_ERROR_DURING_TREATMENT );
         }
 
         try
         {
-            checkAccess( DtoMapper.toTaskDto( task ), TaskChangeType.DELETED );
+            this.checkAccess( DtoMapper.toTaskDto( task ), TaskChangeType.DELETED );
 
             TaskChangeHome.deleteAllByTaskId( task.getId( ) );
             TaskHome.delete( task.getId( ) );

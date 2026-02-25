@@ -42,7 +42,7 @@ public class TaskNotFoundException extends TaskStackException
      */
     public TaskNotFoundException( final String strError )
     {
-        this( strError, null );
+        this( strError, (String) null );
     }
 
     /**
@@ -53,6 +53,30 @@ public class TaskNotFoundException extends TaskStackException
      */
     public TaskNotFoundException( final String strError, final Exception error )
     {
+        this( strError, error, null );
+    }
+
+    /**
+     * @param strError
+     *            error message
+     * @param localeMessageKey
+     *            local message key
+     */
+    public TaskNotFoundException( final String strError, final String localeMessageKey )
+    {
+        super( strError );
+        this.localeMessageKey = localeMessageKey;
+    }
+
+    /**
+     * @param strError
+     *            error message
+     * @param error
+     *            error exception
+     */
+    public TaskNotFoundException( final String strError, final Exception error, final String localeMessageKey )
+    {
         super( strError, error );
+        this.localeMessageKey = localeMessageKey;
     }
 }

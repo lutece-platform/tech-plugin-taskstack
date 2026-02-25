@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.taskstack.exception;
 
 public class TaskStackException extends Exception
 {
+    protected String localeMessageKey;
 
     /**
      * @param strError
@@ -42,7 +43,7 @@ public class TaskStackException extends Exception
      */
     public TaskStackException( final String strError )
     {
-        this( strError, null );
+        this( strError, (String) null );
     }
 
     /**
@@ -53,6 +54,35 @@ public class TaskStackException extends Exception
      */
     public TaskStackException( final String strError, final Exception error )
     {
+        this( strError, error, null );
+    }
+
+    /**
+     * @param strError
+     *            error message
+     * @param localeMessageKey
+     *            local message key
+     */
+    public TaskStackException( final String strError, final String localeMessageKey )
+    {
+        super( strError );
+        this.localeMessageKey = localeMessageKey;
+    }
+
+    /**
+     * @param strError
+     *            error message
+     * @param error
+     *            error exception
+     */
+    public TaskStackException( final String strError, final Exception error, final String localeMessageKey )
+    {
         super( strError, error );
+        this.localeMessageKey = localeMessageKey;
+    }
+
+    public String getLocaleMessageKey( )
+    {
+        return localeMessageKey;
     }
 }

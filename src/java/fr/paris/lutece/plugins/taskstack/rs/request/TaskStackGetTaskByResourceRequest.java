@@ -80,7 +80,7 @@ public class TaskStackGetTaskByResourceRequest extends AbstractTaskStackRequest
         }
         catch( final TaskStackException e )
         {
-            throw new TaskStackException( "Error while retrieving task " + taskResourceId + ".", e );
+            throw new TaskStackException( "Error while retrieving task " + taskResourceId + ".", e, e.getLocaleMessageKey( ) );
         }
     }
 }

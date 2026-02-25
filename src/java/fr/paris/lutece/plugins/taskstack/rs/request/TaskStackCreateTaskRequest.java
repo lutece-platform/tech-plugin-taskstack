@@ -70,6 +70,8 @@ public class TaskStackCreateTaskRequest extends AbstractTaskStackRequest
             final TaskDto task = TaskService.instance( ).createTask( taskCreateRequest.getTask( ), _author, _strClientCode );
             final CreateTaskResponse response = new CreateTaskResponse( );
             response.setTaskCode( task.getTaskCode( ) );
+            response.setResourceId( task.getResourceId( ) );
+            response.setResourceType( task.getResourceType( ) );
             
             if ( task.getTaskStatus( ).equals( TaskStatusType.TODO ) )
             {
@@ -82,19 +84,21 @@ public class TaskStackCreateTaskRequest extends AbstractTaskStackRequest
             {
             	String message = String.format( "Task validation error for resource %s of type %s. ",
 	                    taskCreateRequest.getTask( ).getResourceId( ), taskCreateRequest.getTask( ).getResourceType( ) );
-            	if (task.getMetadata( ) !=null && task.getMetadata( ).containsKey( "Error") ) 
+                String messageKey = Constants.PROPERTY_REST_ERROR_DURING_TREATMENT;
+            	if ( task.getMetadata( ) != null && task.getMetadata( ).containsKey( Constants.KEY_METADATA_ERROR ) )
             	{
-            		message += task.getMetadata( ).get( "Error");
+            		message += task.getMetadata( ).get( Constants.KEY_METADATA_ERROR );
+            		messageKey += task.getMetadata( ).get( Constants.KEY_METADATA_I18N_KEY );
             	}
 	            response.setStatus(
-	                    ResponseStatusFactory.forbidden( ).setMessage( message ).setMessageKey( Constants.PROPERTY_REST_ERROR_DURING_TREATMENT ) );
+	                    ResponseStatusFactory.forbidden( ).setMessage( message ).setMessageKey( messageKey ) );
             }
             
             return response;
         }
         catch( final TaskStackException e )
         {
-            throw new TaskStackException( "An error occurred during task creation request: " + e.getMessage( ), e );
+            throw new TaskStackException( "An error occurred during task creation request: " + e.getMessage( ), e, e.getLocaleMessageKey( ) );
         }
     }
 }

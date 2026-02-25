@@ -58,6 +58,8 @@ public class Constants
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_MESSAGE_KEY = "message_key";
     public static final String KEY_HTTP_CODE = "http_code";
+    public static final String KEY_METADATA_ERROR = "Error";
+    public static final String KEY_METADATA_I18N_KEY = "i18nKey";
 
     public static final String PARAMETER_CODE = "code";
     public static final String PARAMETER_ID_RESOURCE = "idResource";

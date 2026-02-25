@@ -89,7 +89,7 @@ public class TaskStackSearchTaskRequest extends AbstractTaskStackRequest
         }
         catch( final TaskStackException e )
         {
-            throw new TaskStackException( "An error occurred during task creation request: " + e.getMessage( ), e );
+            throw new TaskStackException( "An error occurred during task creation request: " + e.getMessage( ), e, e.getLocaleMessageKey( ) );
         }
     }
 }
