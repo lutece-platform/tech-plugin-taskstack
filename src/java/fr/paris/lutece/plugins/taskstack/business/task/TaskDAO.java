@@ -222,11 +222,11 @@ public class TaskDAO implements ITaskDAO
     @Override
     public List<Task> search(final String strTaskCode, final String strResourceId, final String strResourceType, String strTaskType, final Date creationDate,
                              final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-                             final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Map<String, String> metadata, final Plugin plugin ) throws JsonProcessingException
+                             final CreationDateOrdering creationDateOrdering, final Integer limit, final Map<String, String> metadata, final Plugin plugin ) throws JsonProcessingException
     {
 
         final String sqlQuerySearch = this.fillCriterias(strTaskCode, strResourceId, strResourceType, strTaskType, creationDate,
-                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata, SQL_QUERY_SEARCH);
+                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, limit, metadata, SQL_QUERY_SEARCH);
 
         try ( final DAOUtil daoUtil = new DAOUtil( sqlQuerySearch, plugin ) )
         {
@@ -243,11 +243,11 @@ public class TaskDAO implements ITaskDAO
     @Override
     public List<Integer> searchId(final String strTaskCode, final String strResourceId, final String strResourceType, String strTaskType, final Date creationDate,
                                   final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-                                  final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Map<String, String> metadata, Plugin plugin ) throws JsonProcessingException
+                                  final CreationDateOrdering creationDateOrdering, final Integer limit, final Map<String, String> metadata, Plugin plugin ) throws JsonProcessingException
     {
 
         final String sqlQuerySearch = this.fillCriterias(strTaskCode, strResourceId, strResourceType, strTaskType, creationDate,
-                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata, SQL_QUERY_SEARCH_ID);
+                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, limit, metadata, SQL_QUERY_SEARCH_ID);
 
         try ( final DAOUtil daoUtil = new DAOUtil( sqlQuerySearch, plugin ) )
         {

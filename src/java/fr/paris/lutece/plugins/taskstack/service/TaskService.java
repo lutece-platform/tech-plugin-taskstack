@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.paris.lutece.plugins.taskstack.business.task.Task;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskChange;
 import fr.paris.lutece.plugins.taskstack.business.task.TaskChangeHome;
@@ -218,6 +219,32 @@ public class TaskService
         }
     }
 
+    public void searchTaskAndUpdateStatus( final String strTaskCode, final String strResourceId, final String strResourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
+                                       final CreationDateOrdering creationDateOrdering, final Integer limit, final Map<String, String> metadata, final TaskStatusType newStatus, final List<String> exculdedTaskCodes, final RequestAuthor author, final String clientCode ) throws TaskStackException {
+        try {
+            final List<Task> updatableTasks = TaskHome.search(strTaskCode, strResourceId, strResourceType, strTaskType,
+                    creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus,
+                    nNbDaysSinceCreated, creationDateOrdering, limit, metadata);
+            updatableTasks.removeIf( t -> exculdedTaskCodes.contains( t.getTaskCode( ) ) );
+
+            for ( final Task task : updatableTasks )
+            {
+                final Timestamp updateStatusTime = TaskHome.updateStatus( task.getTaskCode( ), TaskStatusType.CANCELED, clientCode );
+                final TaskChange taskChange = new TaskChange( );
+                taskChange.setTaskChangeType( TaskChangeType.UPDATED );
+                taskChange.setTaskStatus( newStatus );
+                taskChange.setIdTask( task.getId( ) );
+                taskChange.setClientCode( clientCode );
+                taskChange.setAuthorType( author.getType( ).name( ) );
+                taskChange.setAuthorName( author.getName( ) );
+                taskChange.setTaskChangeDate( updateStatusTime );
+                TaskChangeHome.create( taskChange );
+            }
+        } catch ( final JsonProcessingException e ){
+            throw new TaskStackException("Could not find and update task status.", e );
+        }
+    }
+
     /**
      * Get a task
      * 
@@ -319,16 +346,16 @@ public class TaskService
      */
     public List<TaskDto> search( final String _strTaskCode, final String _strResourceId, final String _strResourceType, final String _strTaskType,
             final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus,
-            final Integer _nNbDaysSinceCreated, final CreationDateOrdering creationDateOrdering, final Map<String, String> metadata, final int max )
+            final Integer _nNbDaysSinceCreated, final CreationDateOrdering creationDateOrdering, final Map<String, String> metadata, final Integer max )
             throws TaskStackException
     {
-        int nMaxNbIdentityReturned = ( max > 0 ) ? max : PROPERTY_MAX_NB_TASK_RETURNED;
-        List<TaskDto> taskList = new ArrayList<>( );
+        final int maxNbTaskReturned = ( max != null && max > 0 ) ? max : PROPERTY_MAX_NB_TASK_RETURNED;
+        final List<TaskDto> taskList = new ArrayList<>( );
 
         try
         {
             final List<Task> result = TaskHome.search( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate,
-                    strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata );
+                    strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, maxNbTaskReturned, metadata );
 
             for ( Task t : result )
             {

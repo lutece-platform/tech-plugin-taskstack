@@ -137,15 +137,15 @@ public class TaskHome
     }
 
     public static List<Task> search(final String strTaskCode, final String strResourceId, final String strResourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-                                    final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Map<String, String> metadata ) throws JsonProcessingException
+                                    final CreationDateOrdering creationDateOrdering, final Integer limit, final Map<String, String> metadata ) throws JsonProcessingException
     {
-        return _taskDao.search( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata, _plugin );
+        return _taskDao.search( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, limit, metadata, _plugin );
     }
 
     public static List<Integer> searchId(final String strTaskCode, final String strResourceId, final String strResourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
-                                    final CreationDateOrdering creationDateOrdering, final int nMaxNbIdentityReturned, final Map<String, String> metadata ) throws JsonProcessingException
+                                    final CreationDateOrdering creationDateOrdering, final Integer limit, final Map<String, String> metadata ) throws JsonProcessingException
     {
-        return _taskDao.searchId( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata, _plugin );
+        return _taskDao.searchId( strTaskCode, strResourceId, strResourceType, strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, limit, metadata, _plugin );
     }
 
     public static List<Task> get( final String strResourceId, final String strResourceType ) throws TaskStackException
