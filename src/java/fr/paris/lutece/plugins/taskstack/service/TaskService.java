@@ -219,11 +219,11 @@ public class TaskService
         }
     }
 
-    public void searchTaskAndUpdateStatus( final String strTaskCode, final String strResourceId, final String strResourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
+    public void searchTaskAndUpdateStatus( final String strTaskCode, final String strResourceId, final String strResourceType, final String strTaskType, final Date creationDate, final Date lastUpdatedate, final Date expirationDate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
                                        final CreationDateOrdering creationDateOrdering, final Integer limit, final Map<String, String> metadata, final TaskStatusType newStatus, final List<String> exculdedTaskCodes, final RequestAuthor author, final String clientCode ) throws TaskStackException {
         try {
             final List<Task> updatableTasks = TaskHome.search(strTaskCode, strResourceId, strResourceType, strTaskType,
-                    creationDate, lastUpdatedate, strLastUpdateClientCode, enumTaskStatus,
+                    creationDate, lastUpdatedate, expirationDate, strLastUpdateClientCode, enumTaskStatus,
                     nNbDaysSinceCreated, creationDateOrdering, limit, metadata);
             updatableTasks.removeIf( t -> exculdedTaskCodes.contains( t.getTaskCode( ) ) );
 
@@ -345,7 +345,7 @@ public class TaskService
      * @throws TaskStackException
      */
     public List<TaskDto> search( final String _strTaskCode, final String _strResourceId, final String _strResourceType, final String _strTaskType,
-            final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus,
+            final Date creationDate, final Date lastUpdatedate, final Date expirationDate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus,
             final Integer _nNbDaysSinceCreated, final CreationDateOrdering creationDateOrdering, final Map<String, String> metadata, final Integer max )
             throws TaskStackException
     {
@@ -355,7 +355,7 @@ public class TaskService
         try
         {
             final List<Task> result = TaskHome.search( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate,
-                    strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, maxNbTaskReturned, metadata );
+                    expirationDate, strLastUpdateClientCode, _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, maxNbTaskReturned, metadata );
 
             for ( Task t : result )
             {
@@ -401,14 +401,14 @@ public class TaskService
      * @throws TaskStackException
      */
     public List<Integer> searchId( final String _strTaskCode, final String _strResourceId, final String _strResourceType, final String _strTaskType,
-            final Date creationDate, final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus,
+            final Date creationDate, final Date lastUpdatedate, final Date expirationDate, final String strLastUpdateClientCode, final List<TaskStatusType> _enumTaskStatus,
             final Integer _nNbDaysSinceCreated, final CreationDateOrdering creationDateOrdering, final Map<String, String> metadata, final int max )
             throws TaskStackException
     {
         int nMaxNbIdentityReturned = ( max > 0 ) ? max : PROPERTY_MAX_NB_TASK_RETURNED;
         try
         {
-            return TaskHome.searchId( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate, strLastUpdateClientCode,
+            return TaskHome.searchId( _strTaskCode, _strResourceId, _strResourceType, _strTaskType, creationDate, lastUpdatedate, expirationDate, strLastUpdateClientCode,
                     _enumTaskStatus, _nNbDaysSinceCreated, creationDateOrdering, nMaxNbIdentityReturned, metadata );
         }
         catch( final Exception e )

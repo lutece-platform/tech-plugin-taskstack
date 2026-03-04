@@ -26,6 +26,7 @@
                             <th>#i18n{taskstack.view_task_stack.type}</th>
                             <th>#i18n{taskstack.view_task_stack.date.creation}</th>
                             <th>#i18n{taskstack.view_task_stack.date.last_update}</th>
+                            <th>#i18n{taskstack.view_task_stack.date.expiration}</th>
                             <th>#i18n{taskstack.view_task_stack.last_update_client_code}</th>
                             <th>#i18n{taskstack.view_task_stack.status}</th>
                         </tr>
@@ -58,6 +59,10 @@
                             <td>
                                 <input class="form-control search-field" type="date" name="last_update_date"
                                        placeholder="DD/MM/YYYY" value="${last_update_date!''}" />
+                            </td>
+                            <td>
+                                <input class="form-control search-field" type="date" name="expiration_date"
+                                       placeholder="DD/MM/YYYY" value="${expiration_date!''}" />
                             </td>
                             <td>
                                 <input class="form-control search-field" type="text" name="last_update_client_code"
@@ -95,9 +100,10 @@
                     <th onclick="sortTable(3, 'task-stack-table')">#i18n{taskstack.view_task_stack.type}</th>
                     <th onclick="sortTable(4, 'task-stack-table')">#i18n{taskstack.view_task_stack.date.creation}</th>
                     <th onclick="sortTable(5, 'task-stack-table')">#i18n{taskstack.view_task_stack.date.last_update}</th>
-                    <th onclick="sortTable(6, 'task-stack-table')">#i18n{taskstack.view_task_stack.last_update_client_code}</th>
-                    <th onclick="sortTable(7, 'task-stack-table')">#i18n{taskstack.view_task_stack.status}</th>
-                    <th onclick="sortTable(8, 'task-stack-table')">#i18n{taskstack.view_task_stack.metadata}</th>
+                    <th onclick="sortTable(6, 'task-stack-table')">#i18n{taskstack.view_task_stack.date.expiration}</th>
+                    <th onclick="sortTable(7, 'task-stack-table')">#i18n{taskstack.view_task_stack.last_update_client_code}</th>
+                    <th onclick="sortTable(8, 'task-stack-table')">#i18n{taskstack.view_task_stack.status}</th>
+                    <th onclick="sortTable(9, 'task-stack-table')">#i18n{taskstack.view_task_stack.metadata}</th>
                 </tr>
                 <#if stack_task_list??  && stack_task_list?has_content>
                     <#list stack_task_list as stack_task>
@@ -119,6 +125,7 @@
                                 <#if key = stack_task.taskCode>
                                     <td><input type="hidden" value="${stack_task_list_timestamp[key][0]!}" />${stack_task.creationDate!}</td>
                                     <td><input type="hidden" value="${stack_task_list_timestamp[key][1]!}" />${stack_task.lastUpdateDate!}</td>
+                                    <td><input type="hidden" value="${stack_task_list_timestamp[key][2]!}" />${stack_task.expirationDate!}</td>
                                 </#if>
                             </#list>
                             <td>${stack_task.lastUpdateClientCode!}</td>
