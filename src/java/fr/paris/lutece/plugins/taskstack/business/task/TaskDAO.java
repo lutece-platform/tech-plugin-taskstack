@@ -66,6 +66,7 @@ public class TaskDAO implements ITaskDAO
     private static final String TASK_TYPE_CRITERIA = "${task_type_criteria}";
     private static final String TASK_CREATION_DATE_CRITERIA = "${task_creation_date_criteria}";
     private static final String TASK_LAST_UPDATE_CRITERIA = "${task_last_update_criteria}";
+    private static final String TASK_EXPIRATION_DATE_CRITERIA = "${expiration_date__criteria}";
     private static final String TASK_LAST_UPDATE_CLIENT_CODE_CRITERIA = "${task_last_update_client_code_criteria}";
     private static final String TASK_STATUS_CRITERIA = "${task_status_criteria}";
     private static final String NB_DAYS_CREATION_CRITERIA = "${nb_days_creation_criteria}";
@@ -74,13 +75,13 @@ public class TaskDAO implements ITaskDAO
     private static final String LIMIT = "${limit}";
 
     // Requests
-    private static final String SQL_QUERY_SELECT = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id = ?";
-    private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";
-    private static final String SQL_QUERY_SELECT_BY_ID_AND_RESOURCE_TYPE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE resource_id = ? AND resource_type = ?";
-    private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id IN (";
-    private static final String SQL_QUERY_SELECT_BY_VALIDITY = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE stack_task.expiration_date < now();";
-    private static final String SQL_QUERY_SEARCH = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, status, metadata::text FROM stack_task WHERE " + TASK_CODE_CRITERIA + " AND " + TASK_RESOURCE_ID_CRITERIA + " AND " + TASK_RESOURCE_TYPE_CRITERIA + " AND " + TASK_TYPE_CRITERIA + " AND " + TASK_CREATION_DATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CLIENT_CODE_CRITERIA + " AND " + TASK_STATUS_CRITERIA + " AND " + NB_DAYS_CREATION_CRITERIA + " AND " + METADATA_CRITERIA + " " + ORDER_CRITERIA + " LIMIT " + LIMIT;
-    private static final String SQL_QUERY_SEARCH_ID = "SELECT id FROM stack_task WHERE " + TASK_CODE_CRITERIA + " AND " + TASK_RESOURCE_ID_CRITERIA + " AND " + TASK_RESOURCE_TYPE_CRITERIA + " AND " + TASK_TYPE_CRITERIA + " AND " + TASK_CREATION_DATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CLIENT_CODE_CRITERIA + " AND " + TASK_STATUS_CRITERIA + " AND " + NB_DAYS_CREATION_CRITERIA + " AND " + METADATA_CRITERIA + " " + ORDER_CRITERIA + " LIMIT " + LIMIT;
+    private static final String SQL_QUERY_SELECT = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, expiration_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id = ?";
+    private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, expiration_date, last_update_client_code, status, metadata::text FROM stack_task WHERE code = ?";
+    private static final String SQL_QUERY_SELECT_BY_ID_AND_RESOURCE_TYPE = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, expiration_date, last_update_client_code, status, metadata::text FROM stack_task WHERE resource_id = ? AND resource_type = ?";
+    private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, expiration_date, last_update_client_code, status, metadata::text FROM stack_task WHERE id IN (";
+    private static final String SQL_QUERY_SELECT_BY_VALIDITY = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, expiration_date, last_update_client_code, status, metadata::text FROM stack_task WHERE stack_task.expiration_date < now();";
+    private static final String SQL_QUERY_SEARCH = "SELECT id, code, resource_id, resource_type, type, creation_date, last_update_date, expiration_date, last_update_client_code, status, metadata::text FROM stack_task WHERE " + TASK_CODE_CRITERIA + " AND " + TASK_RESOURCE_ID_CRITERIA + " AND " + TASK_RESOURCE_TYPE_CRITERIA + " AND " + TASK_TYPE_CRITERIA + " AND " + TASK_CREATION_DATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CRITERIA + " AND " + TASK_EXPIRATION_DATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CLIENT_CODE_CRITERIA + " AND " + TASK_STATUS_CRITERIA + " AND " + NB_DAYS_CREATION_CRITERIA + " AND " + METADATA_CRITERIA + " " + ORDER_CRITERIA + " LIMIT " + LIMIT;
+    private static final String SQL_QUERY_SEARCH_ID = "SELECT id FROM stack_task WHERE " + TASK_CODE_CRITERIA + " AND " + TASK_RESOURCE_ID_CRITERIA + " AND " + TASK_RESOURCE_TYPE_CRITERIA + " AND " + TASK_TYPE_CRITERIA + " AND " + TASK_CREATION_DATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CRITERIA + " AND " + TASK_EXPIRATION_DATE_CRITERIA + " AND " + TASK_LAST_UPDATE_CLIENT_CODE_CRITERIA + " AND " + TASK_STATUS_CRITERIA + " AND " + NB_DAYS_CREATION_CRITERIA + " AND " + METADATA_CRITERIA + " " + ORDER_CRITERIA + " LIMIT " + LIMIT;
     private static final String SQL_QUERY_INSERT = "INSERT INTO stack_task ( code, resource_id, resource_type, type, creation_date, last_update_date, last_update_client_code, expiration_date, status, metadata ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, to_json(?::json) ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM stack_task WHERE id = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE stack_task SET code = ?, resource_id = ?, resource_type = ?, type = ?, creation_date = ?, last_update_date = ?, last_update_client_code = ?, status = ?, metadata = to_json(?::json) WHERE code = ?";
@@ -221,12 +222,12 @@ public class TaskDAO implements ITaskDAO
 
     @Override
     public List<Task> search(final String strTaskCode, final String strResourceId, final String strResourceType, String strTaskType, final Date creationDate,
-                             final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
+                             final Date lastUpdatedate, final Date expirationDate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
                              final CreationDateOrdering creationDateOrdering, final Integer limit, final Map<String, String> metadata, final Plugin plugin ) throws JsonProcessingException
     {
 
         final String sqlQuerySearch = this.fillCriterias(strTaskCode, strResourceId, strResourceType, strTaskType, creationDate,
-                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, limit, metadata, SQL_QUERY_SEARCH);
+                lastUpdatedate, expirationDate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, limit, metadata, SQL_QUERY_SEARCH);
 
         try ( final DAOUtil daoUtil = new DAOUtil( sqlQuerySearch, plugin ) )
         {
@@ -242,12 +243,12 @@ public class TaskDAO implements ITaskDAO
 
     @Override
     public List<Integer> searchId(final String strTaskCode, final String strResourceId, final String strResourceType, String strTaskType, final Date creationDate,
-                                  final Date lastUpdatedate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
+                                  final Date lastUpdatedate, final Date expirationDate, final String strLastUpdateClientCode, final List<TaskStatusType> enumTaskStatus, final Integer nNbDaysSinceCreated,
                                   final CreationDateOrdering creationDateOrdering, final Integer limit, final Map<String, String> metadata, Plugin plugin ) throws JsonProcessingException
     {
 
         final String sqlQuerySearch = this.fillCriterias(strTaskCode, strResourceId, strResourceType, strTaskType, creationDate,
-                lastUpdatedate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, limit, metadata, SQL_QUERY_SEARCH_ID);
+                lastUpdatedate, expirationDate, strLastUpdateClientCode, enumTaskStatus, nNbDaysSinceCreated, creationDateOrdering, limit, metadata, SQL_QUERY_SEARCH_ID);
 
         try ( final DAOUtil daoUtil = new DAOUtil( sqlQuerySearch, plugin ) )
         {
@@ -262,7 +263,7 @@ public class TaskDAO implements ITaskDAO
     }
 
     public String fillCriterias(final String strTaskCode, final String strResourceId, final String strResourceType,
-                                String strTaskType, final Date creationDate, final Date lastUpdatedate,
+                                String strTaskType, final Date creationDate, final Date lastUpdatedate, final Date expirationDate,
                                 final String strLastUpdateClientCode, List<TaskStatusType> enumTaskStatus,
                                 Integer nNbDaysSinceCreated, CreationDateOrdering creationDateOrdering, Integer limit, Map<String, String> metadata, String sqlQuerySearch )
     {
@@ -320,6 +321,16 @@ public class TaskDAO implements ITaskDAO
         else
         {
             sqlQuerySearch = sqlQuerySearch.replace( TASK_LAST_UPDATE_CRITERIA,  "1=1" );
+        }
+
+        if(expirationDate != null )
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_EXPIRATION_DATE_CRITERIA, "expiration_date >= '" + expirationDate +
+                    "' AND expiration_date < '" + DateUtils.addDays(expirationDate, 1) + "'" );
+        }
+        else
+        {
+            sqlQuerySearch = sqlQuerySearch.replace( TASK_EXPIRATION_DATE_CRITERIA,  "1=1" );
         }
 
         if ( StringUtils.isNotBlank( strLastUpdateClientCode ) )
@@ -437,6 +448,7 @@ public class TaskDAO implements ITaskDAO
         task.setTaskType( daoUtil.getString( i++ ) );
         task.setCreationDate( daoUtil.getTimestamp( i++ ) );
         task.setLastUpdateDate( daoUtil.getTimestamp( i++ ) );
+        task.setExpirationDate( daoUtil.getTimestamp( i++ ) );
         task.setLastUpdateClientCode( daoUtil.getString( i++ ) );
         task.setTaskStatus( TaskStatusType.valueOf( daoUtil.getString( i++ ) ) );
         final String jsonMap = daoUtil.getString( i );
