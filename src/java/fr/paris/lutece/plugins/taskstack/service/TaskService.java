@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.taskstack.service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -427,7 +428,12 @@ public class TaskService
     public List<TaskDto> getTasksListByIds( List<Integer> listId ) throws TaskStackException
     {
         final List<Task> search = TaskHome.getTasksListByIds( listId );
-        return search.stream( ).map( DtoMapper::toTaskDto ).peek( taskDto -> taskDto.getTaskChanges( ).addAll( this.getTaskHistory( taskDto.getTaskCode( ) ) ) )
+        return search.stream( ).map( DtoMapper::toTaskDto )
+                .peek( taskDto -> {
+                    final List<TaskChangeDto> taskHistory = this.getTaskHistory( taskDto.getTaskCode( ) );
+                    taskHistory.sort( Comparator.comparing( TaskChangeDto::getTaskChangeDate ).reversed( ) );
+                    taskDto.getTaskChanges( ).addAll( taskHistory );
+                } )
                 .collect( Collectors.toList( ) );
     }
 
