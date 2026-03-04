@@ -203,6 +203,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
             try
             {
                 TaskDto task = TaskService.instance( ).getTask( taskCode );
+                task.getTaskChanges( ).sort( Comparator.comparing( TaskChangeDto::getTaskChangeDate ).reversed( ) );
                 stackTaskHistoryList.addAll(task.getTaskChanges( ) );
             } catch ( TaskStackException e )
             {
@@ -323,8 +324,7 @@ public class TaskSearchJspBean extends MVCAdminJspBean
     private List<TaskDto> getTasksListByIds( List<Integer> listId) throws TaskStackException
     {
         List<TaskDto> taskDtoList = TaskService.instance( ).getTasksListByIds(listId);
-        taskDtoList.sort(Comparator.comparing(TaskDto::getCreationDate));
-        Collections.reverse(taskDtoList);
+        taskDtoList.sort(Comparator.comparing(TaskDto::getCreationDate).reversed());
         return taskDtoList;
     }
 }
